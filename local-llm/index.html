@@ -1,0 +1,1771 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+        <link rel="prev" href="../hardware/">
+      
+      
+        <link rel="next" href="../decisions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>ローカルLLM - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#llm" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href=".." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ローカルLLM
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../hardware/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../decisions/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ハードウェア構成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ハードウェア構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hp-z8-g4-workstationbto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本体: HP Z8 G4 Workstation（中古BTO）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        電力バジェット
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ソフトウェアスタック
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ソフトウェアスタック">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推論エンジン比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推奨モデル
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        セットアップ手順
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="セットアップ手順">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-ik_llamacpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. ik_llama.cpp ビルド
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. モデルダウンロード
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 推論サーバー起動
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-open-webui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Open WebUI（フロントエンド）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ネットワーク構成
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCIe帯域と推論性能
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCIe帯域と推論性能">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pcie-x4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        なぜPCIe x4でも問題ないか
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pve-1pve-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PVE-1/PVE-2への影響
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入先
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../decisions/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ハードウェア構成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ハードウェア構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hp-z8-g4-workstationbto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本体: HP Z8 G4 Workstation（中古BTO）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        電力バジェット
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ソフトウェアスタック
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ソフトウェアスタック">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推論エンジン比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推奨モデル
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        セットアップ手順
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="セットアップ手順">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-ik_llamacpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. ik_llama.cpp ビルド
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. モデルダウンロード
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 推論サーバー起動
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-open-webui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Open WebUI（フロントエンド）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ネットワーク構成
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCIe帯域と推論性能
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCIe帯域と推論性能">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pcie-x4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        なぜPCIe x4でも問題ないか
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pve-1pve-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PVE-1/PVE-2への影響
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入先
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="llm">ローカルLLM推論環境<a class="headerlink" href="#llm" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>最終更新: 2026-02-11（初版）
+関連ADR: <a href="../decisions/002-gpu-pc-local-llm-2026-02/">ADR-002</a></p>
+</blockquote>
+<h2 id="_1">概要<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Claude Codeのバックアップとして、ローカルLLM推論環境を構築する。
+既存の遊休GPUを専用ワークステーションに集約し、Qwen 2.5 32Bクラスのモデルを動作させる。</p>
+<h2 id="_2">ハードウェア構成<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="hp-z8-g4-workstationbto">本体: HP Z8 G4 Workstation（中古BTO）<a class="headerlink" href="#hp-z8-g4-workstationbto" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>スペック</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td>Xeon Gold 6134 × 2 (16C/32T, 3.2GHz, TDP 130W)</td>
+</tr>
+<tr>
+<td>メモリ</td>
+<td>64GB DDR4 ECC RDIMM (16GB × 4)</td>
+</tr>
+<tr>
+<td>ストレージ</td>
+<td>NVMe M.2 256GB (OS) + NVMe 1TB (モデル保管)</td>
+</tr>
+<tr>
+<td>PSU</td>
+<td>1450W (P/N: 851385-001) ※要確認</td>
+</tr>
+<tr>
+<td>PCIe</td>
+<td>x16 × 4本 (2CPU構成時, PCIe 3.0)</td>
+</tr>
+<tr>
+<td>ネットワーク</td>
+<td>Intel 1GbE × 2 (オンボード)</td>
+</tr>
+<tr>
+<td>接続VLAN</td>
+<td>VLAN200 (Lab)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gpu">GPU構成<a class="headerlink" href="#gpu" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>GPU</th>
+<th>アーキテクチャ</th>
+<th>VRAM</th>
+<th>TDP</th>
+<th>CUDA SM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTX 3080 (Palit) #1</td>
+<td>Ampere (SM 8.6)</td>
+<td>10GB GDDR6X</td>
+<td>320W</td>
+<td>68 SM</td>
+</tr>
+<tr>
+<td>RTX 3080 (Palit) #2</td>
+<td>Ampere (SM 8.6)</td>
+<td>10GB GDDR6X</td>
+<td>320W</td>
+<td>68 SM</td>
+</tr>
+<tr>
+<td>RTX 2080 Ti (GALAX)</td>
+<td>Turing (SM 7.5)</td>
+<td>11GB GDDR6</td>
+<td>250W</td>
+<td>68 SM</td>
+</tr>
+<tr>
+<td><strong>合計</strong></td>
+<td></td>
+<td><strong>31GB</strong></td>
+<td><strong>890W</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_3">電力バジェット<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>GPU合計:    890W (RTX 3080 ×2: 640W + RTX 2080 Ti: 250W)
+CPU合計:    260W (130W × 2)
+システム:    ~50W
+────────────────
+合計:      ~1,200W
+</code></pre></div>
+<p>Z8 G4のBTO標準PSUは1125Wのため、単体では不足する。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">案1: 1450W PSU換装（推奨）</label><label for="__tabbed_1_2">案2: デュアルPSU構成（フォールバック）</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>HP純正1450W PSU (P/N: 851385-001) に換装する。</p>
+<div class="highlight"><pre><span></span><code>1450W PSU 1台で全給電
+→ 負荷率: 82.8% ✅（理想的な80%台）
+</code></pre></div>
+<p>BTO注文時にPCServer1へ在庫を問い合わせること。</p>
+</div>
+<div class="tabbed-block">
+<p>1450Wが入手できない場合、外部ATX電源でGPUに給電する。
+マイニング環境で広く使われた実績のある構成。</p>
+<div class="highlight"><pre><span></span><code>Z8 G4 内蔵PSU (1125W)          外部ATX電源 (1000W)
+  └─ CPU ×2, メモリ, NVMe,       └─ GPU ×3 (PCIe 8ピン ×6本)
+     マザー, ファン                   ├─ RTX 3080 #1 (320W)
+     → 負荷: ~310W (27.6%)          ├─ RTX 3080 #2 (320W)
+                                      └─ RTX 2080 Ti  (250W)
+                                      → 負荷: ~890W (89.0%)
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>必要パーツ</th>
+<th>価格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATX電源 1000W (80+ Gold)</td>
+<td>~¥15,000〜20,000</td>
+</tr>
+<tr>
+<td>デュアルPSU連動基板（ADD2PSU等）</td>
+<td>~¥500〜1,000</td>
+</tr>
+<tr>
+<td>PCIe 8ピン延長ケーブル</td>
+<td>~¥500〜1,000</td>
+</tr>
+</tbody>
+</table>
+<p>連動基板がメインPSUの24ピンATX信号を検知し、外部PSUを同時ON/OFFする。
+ライザーケーブルとの併用でGPU・ケーブルが外部に露出する構成になるが、
+ホームラボ環境では実用上問題ない。</p>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">デュアルPSU時の注意</p>
+<p>両PSUは必ず同じコンセント（電源タップ）から給電すること。
+異なる系統から取ると電位差でマザーボードを損傷するリスクがある。</p>
+</div>
+<h2 id="_4">ソフトウェアスタック<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">推論エンジン比較<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>フレームワーク</th>
+<th>異種GPU</th>
+<th>並列方式</th>
+<th>推定速度 (32B Q4)</th>
+<th>採用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ik_llama.cpp</strong></td>
+<td>✅</td>
+<td>グラフ分割 (テンソル並列)</td>
+<td>25-40 tok/s</td>
+<td>⭐ 推奨</td>
+</tr>
+<tr>
+<td>llama.cpp / Ollama</td>
+<td>✅</td>
+<td>レイヤー分割 (パイプライン)</td>
+<td>8-15 tok/s</td>
+<td>簡単だが遅い</td>
+</tr>
+<tr>
+<td>vLLM</td>
+<td>❌ 同種GPU必須</td>
+<td>テンソル並列</td>
+<td>N/A</td>
+<td>使用不可</td>
+</tr>
+<tr>
+<td>ExLlamaV2</td>
+<td>❌ Flash Attn制限</td>
+<td>テンソル並列</td>
+<td>N/A</td>
+<td>2080 Tiで不可</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">推奨モデル<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>モデル</th>
+<th>パラメータ</th>
+<th>量子化</th>
+<th>VRAMサイズ</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Qwen 2.5 32B Instruct</strong></td>
+<td>32B</td>
+<td>Q4_K_M</td>
+<td>~20GB</td>
+<td>メイン: エージェント型タスク、IaCメンテナンス</td>
+</tr>
+<tr>
+<td>Qwen 2.5 14B Instruct</td>
+<td>14B</td>
+<td>Q4_K_M</td>
+<td>~9GB</td>
+<td>サブ: 軽量タスク、複数同時起動可</td>
+</tr>
+<tr>
+<td>Qwen 2.5 Coder 14B</td>
+<td>14B</td>
+<td>Q4_K_M</td>
+<td>~9GB</td>
+<td>コード生成特化（必要時）</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Qwen 2.5（非Coder）を選択する理由</p>
+<p>Claude Codeのバックアップ用途では、<code>.claude/</code>のスキル定義を読み取り、
+Ansible/OpenTofu/Docker Composeの操作を自律的に実行する必要がある。
+Coderモデルよりも汎用モデルの方がエージェント的思考・ツール活用に優れる。</p>
+</div>
+<h3 id="_7">セットアップ手順<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<h4 id="1-ik_llamacpp">1. ik_llama.cpp ビルド<a class="headerlink" href="#1-ik_llamacpp" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 異種GPU対応: Turing (SM 7.5) + Ampere (SM 8.6)</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ikawrakow/ik_llama.cpp
+<span class="nb">cd</span><span class="w"> </span>ik_llama.cpp
+cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DGGML_CUDA<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DCMAKE_CUDA_ARCHITECTURES<span class="o">=</span><span class="s2">&quot;75;86&quot;</span>
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
+</code></pre></div>
+<h4 id="2">2. モデルダウンロード<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Hugging Faceからダウンロード</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/models
+huggingface-cli<span class="w"> </span>download<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>Qwen/Qwen2.5-32B-Instruct-GGUF<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>qwen2.5-32b-instruct-q4_k_m.gguf<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--local-dir<span class="w"> </span>/opt/models
+</code></pre></div>
+<h4 id="3">3. 推論サーバー起動<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>./build/bin/llama-server<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--model<span class="w"> </span>/opt/models/qwen2.5-32b-instruct-q4_k_m.gguf<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--split-mode<span class="w"> </span>graph<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--tensor-split<span class="w"> </span><span class="m">10</span>,10,11<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--n-gpu-layers<span class="w"> </span><span class="m">999</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ctx-size<span class="w"> </span><span class="m">8192</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--port<span class="w"> </span><span class="m">8080</span>
+</code></pre></div>
+<p><code>--tensor-split 10,10,11</code> は各GPUのVRAM比率に基づく分割。</p>
+<h4 id="4-open-webui">4. Open WebUI（フロントエンド）<a class="headerlink" href="#4-open-webui" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># docker-compose.yml</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">open-webui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/open-webui/open-webui:main</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3000:8080&quot;</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OLLAMA_BASE_URL=http://host.docker.internal:8080</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">open-webui-data:/app/backend/data</span>
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">open-webui-data</span><span class="p">:</span>
+</code></pre></div>
+<h2 id="_8">ネットワーク構成<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart LR
+    USER[ユーザー] --&gt;|Tailscale / VLAN200| WEBUI[Open WebUI&lt;br/&gt;:3000]
+    WEBUI --&gt; ENGINE[ik_llama.cpp&lt;br/&gt;:8080]
+    ENGINE --&gt; GPU1[RTX 3080 #1&lt;br/&gt;10GB]
+    ENGINE --&gt; GPU2[RTX 3080 #2&lt;br/&gt;10GB]
+    ENGINE --&gt; GPU3[RTX 2080 Ti&lt;br/&gt;11GB]</code></pre>
+<table>
+<thead>
+<tr>
+<th>ポート</th>
+<th>サービス</th>
+<th>アクセス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8080</td>
+<td>ik_llama.cpp API</td>
+<td>ローカル / VLAN200内</td>
+</tr>
+<tr>
+<td>3000</td>
+<td>Open WebUI</td>
+<td>Tailscale経由</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pcie">PCIe帯域と推論性能<a class="headerlink" href="#pcie" title="Permanent link">&para;</a></h2>
+<h3 id="pcie-x4">なぜPCIe x4でも問題ないか<a class="headerlink" href="#pcie-x4" title="Permanent link">&para;</a></h3>
+<p>LLM推論（特にレイヤー分割方式）では、GPU間で転送するデータは各レイヤーの活性化テンソルのみ。</p>
+<table>
+<thead>
+<tr>
+<th>接続方式</th>
+<th>帯域幅</th>
+<th>LLM推論への影響</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCIe 3.0 x16</td>
+<td>~16 GB/s</td>
+<td>ベースライン</td>
+</tr>
+<tr>
+<td>PCIe 3.0 x8</td>
+<td>~8 GB/s</td>
+<td>ほぼ差なし</td>
+</tr>
+<tr>
+<td>PCIe 3.0 x4</td>
+<td>~4 GB/s</td>
+<td>実用上問題なし</td>
+</tr>
+<tr>
+<td>10GbE (ネットワーク分散)</td>
+<td>~1.25 GB/s</td>
+<td>致命的に遅い</td>
+</tr>
+<tr>
+<td>NVLink</td>
+<td>~900 GB/s</td>
+<td>理想だが高価</td>
+</tr>
+</tbody>
+</table>
+<p>HP Z8 G4（2CPU構成）はPCIe 3.0 x16 × 4本のため、3枚全てx16接続が可能。</p>
+<h2 id="pve-1pve-2">PVE-1/PVE-2への影響<a class="headerlink" href="#pve-1pve-2" title="Permanent link">&para;</a></h2>
+<p>GPU移設後、PVE-1/PVE-2はCPUオンリーのワーカーノードとなる。</p>
+<table>
+<thead>
+<tr>
+<th>影響</th>
+<th>対応</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPU-PT VMが使用不可</td>
+<td>ゲームサーバー（Pterodactyl Wings）はCPUのみで稼働可</td>
+</tr>
+<tr>
+<td>Ceph OSDは影響なし</td>
+<td>ストレージはNIC (82599ES) 経由で継続</td>
+</tr>
+<tr>
+<td>監視エージェントは影響なし</td>
+<td>node_exporter等はCPUで動作</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">ゲームサーバーへの影響</p>
+<p>Pterodactylで管理するゲームサーバー（Minecraft, Valheim等）はCPU主体のため、
+GPU移設による影響はない。GPU-PT VMでのゲーミングが必要な場合は、
+Z8 G4からGPUをPVE-1/2に戻すか、別途GPUを調達する。</p>
+</div>
+<h2 id="_9">購入先<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ショップ</th>
+<th>用途</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCServer1</td>
+<td>Z8 G4本体（BTO）</td>
+<td>pcserver1.jp</td>
+</tr>
+<tr>
+<td>じゃんぱら</td>
+<td>DDR4 ECC RDIMM</td>
+<td>janpara.co.jp</td>
+</tr>
+<tr>
+<td>Amazon</td>
+<td>NVMe SSD 1TB、ATX電源、連動基板、ライザーケーブル</td>
+<td>amazon.co.jp</td>
+</tr>
+<tr>
+<td>長尾製作所</td>
+<td>GPUラック（物理干渉対策）</td>
+<td>nagao-ss.co.jp</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

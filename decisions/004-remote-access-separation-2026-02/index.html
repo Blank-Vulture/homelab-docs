@@ -1,0 +1,1562 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>ADR-004: 外部アクセス基盤の責務分離 — Cloudflare Zero Trust × Tailscale - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-004-cloudflare-zero-trust-tailscale" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../.." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-004: 外部アクセス基盤の責務分離 — Cloudflare Zero Trust × Tailscale
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../hardware/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../local-llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="コンテキスト">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        背景
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        現状の構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        脅威モデル
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. データプレーンとコントロールプレーンの分離
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tailscale-saas-headscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tailscale SaaS を維持（Headscale は不採用）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Tailscale SaaS を維持（Headscale は不採用）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headscale の鶏と卵問題
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wireguard-tailscale-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WireGuard の設計が Tailscale SaaS のリスクを軽減
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headscale_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headscale が意味を持つケース（本環境には該当しない）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tailscale-pve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tailscale のサーバー側配置: 全 PVE ベアメタル
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-tailscale-acl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tailscale ACL のロックダウン
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 日常運用と緊急時の使い分け
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Tailscale アカウントの強化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-grafana-cf-tunnel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Grafana の CF Tunnel 公開（新規）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連 ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="adr-004-cloudflare-zero-trust-tailscale">ADR-004: 外部アクセス基盤の責務分離 — Cloudflare Zero Trust × Tailscale<a class="headerlink" href="#adr-004-cloudflare-zero-trust-tailscale" title="Permanent link">&para;</a></h1>
+<h2 id="_1">ステータス<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>承認</p>
+<h2 id="_2">コンテキスト<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">背景<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>ホームラボの外部アクセス基盤として Cloudflare Zero Trust（以下 CF ZT）と Tailscale を併用しているが、両者の責務境界が曖昧であった。以下の戦略的選択肢を検討した:</p>
+<ol>
+<li><strong>CF ZT 一元管理</strong>: Tailscale を廃止し CF ZT に統合</li>
+<li><strong>Tailscale フォールバック化</strong>: CF 障害時のみ Tailscale を使用</li>
+<li><strong>責務分離</strong>: データプレーン（CF ZT）とコントロールプレーン（Tailscale）を明確に分離</li>
+</ol>
+<p>また、Tailscale の coordination server を自前で運用する Headscale への移行も検討した。</p>
+<h3 id="_4">現状の構成<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>経路</th>
+<th>用途</th>
+<th>利用者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CF Tunnel (HTTP)</td>
+<td>Web UI（VW, Forgejo, Panel）</td>
+<td>自分・母・友人</td>
+</tr>
+<tr>
+<td>CF Tunnel (Private Network) + WARP</td>
+<td>ゲームサーバー接続</td>
+<td>自分・母・友人</td>
+</tr>
+<tr>
+<td>Tailscale</td>
+<td>管理アクセス（SSH, PVE WebUI, Grafana）</td>
+<td>管理者のみ</td>
+</tr>
+</tbody>
+</table>
+<p>Tailscale は管理端末（VLAN 90）にのみインストールされており、サーバー側は PVE-3 のみ。</p>
+<h3 id="_5">脅威モデル<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>外部アクセス基盤に対する攻撃ベクトルを分析した:</p>
+<table>
+<thead>
+<tr>
+<th>カテゴリ</th>
+<th>攻撃ベクトル</th>
+<th>CF ZT 一元管理時の影響</th>
+<th>責務分離時の影響</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>アカウント侵害</td>
+<td>CF Dashboard 乗っ取り</td>
+<td><strong>全滅</strong>: サービス + 管理の全経路が掌握される</td>
+<td>サービス経路のみ。管理プレーンは無傷</td>
+</tr>
+<tr>
+<td>アカウント侵害</td>
+<td>Tailscale アカウント乗っ取り</td>
+<td>N/A（廃止済み）</td>
+<td>管理経路のみ。ACL + SSH公開鍵認証で被害限定</td>
+</tr>
+<tr>
+<td>サービス障害</td>
+<td>Cloudflare 大規模障害</td>
+<td><strong>デッドロック</strong>: 障害を直すための管理経路も止まる</td>
+<td>サービス停止のみ。Tailscale で管理・復旧可能</td>
+</tr>
+<tr>
+<td>サービス障害</td>
+<td>Tailscale coordination server 障害</td>
+<td>N/A</td>
+<td><strong>既存トンネルは動き続ける</strong>。新規接続のみ不可</td>
+</tr>
+<tr>
+<td>中間者</td>
+<td>CF Edge でのトラフィック傍受</td>
+<td>管理 SSH のメタデータも CF に露出</td>
+<td>SSH は Tailscale 経由（E2E, P2P）。CF に管理トラフィックは流れない</td>
+</tr>
+<tr>
+<td>中間者</td>
+<td>Tailscale coordination server による不正鍵配布</td>
+<td>N/A</td>
+<td>理論上可能だがクライアント側で検知可。WireGuard の E2E 暗号化は維持</td>
+</tr>
+<tr>
+<td>供給網攻撃</td>
+<td>cloudflared バイナリ改ざん</td>
+<td>サービス + 管理の全経路が侵害</td>
+<td>サービス経路のみ</td>
+</tr>
+<tr>
+<td>供給網攻撃</td>
+<td>Tailscale クライアント改ざん</td>
+<td>N/A</td>
+<td>管理経路のみ。被害はPVEベアメタルへのSSHに限定</td>
+</tr>
+</tbody>
+</table>
+<p><strong>最大のリスク: CF ZT 一元管理における CF アカウント侵害</strong></p>
+<p>CF Dashboard を奪取した攻撃者は以下が可能:
+- Tunnel のルーティングを改ざんし、内部サービスを攻撃者のサーバーに向ける
+- Access Policy を変更し、攻撃者自身にアクセスを付与
+- 管理 SSH 接続先を書き換え、MITM で認証情報を窃取</p>
+<p>責務が分離されていれば、CF が完全に侵害されても管理プレーン（Tailscale）は独立した認証・経路で動作し続ける。</p>
+<h2 id="_6">決定<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h3 id="1">1. データプレーンとコントロールプレーンの分離<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<p>2つのシステムは対等な「2つのVPN」ではなく、異なるレイヤーの責務を持つ:</p>
+<div class="highlight"><pre><span></span><code>┌──────────────────────────────────────────────────────┐
+│  データプレーン: Cloudflare Zero Trust                 │
+│                                                      │
+│  ・Web UI (Vaultwarden, Forgejo, Pterodactyl Panel)  │
+│  ・ゲームサーバー接続 (WARP + Private Network)         │
+│  ・Grafana 閲覧 (read-only ダッシュボード)             │
+│                                                      │
+│  利用者: 自分・母・友人                                │
+│  経路: クライアント → CF Edge → cloudflared → サービス  │
+│  特性: CF Edge が中間者、HTTP/TCP プロキシ              │
+└──────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────┐
+│  コントロールプレーン: Tailscale                       │
+│                                                      │
+│  ・SSH (PVE ベアメタル緊急管理)                        │
+│  ・PVE WebUI (8006)                                  │
+│  ・Grafana 管理 (設定変更、アラートルール編集)           │
+│  ・CF 障害時のフォールバック                            │
+│                                                      │
+│  利用者: 管理者のみ (管理端末 VLAN 90)                  │
+│  経路: 管理端末 ←→ PVE (P2P WireGuard)                │
+│  特性: E2E 暗号化、P2P 直接接続、中間者なし             │
+└──────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="2-tailscale-saas-headscale">2. Tailscale SaaS を維持（Headscale は不採用）<a class="headerlink" href="#2-tailscale-saas-headscale" title="Permanent link">&para;</a></h3>
+<p>Headscale（自前 coordination server）を検討したが、不採用とする。</p>
+<h4 id="headscale">Headscale の鶏と卵問題<a class="headerlink" href="#headscale" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>配置先</th>
+<th>問題</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE クラスタ上の VM</td>
+<td>PVE 障害 → Headscale 死亡 → PVE に管理接続不能 → 復旧不能。コントロールプレーンの存在意義が消滅</td>
+</tr>
+<tr>
+<td>backup-node (VLAN 240)</td>
+<td>inbound ゼロの隔離原則に違反。バックアップノードでサービスを公開する設計矛盾</td>
+</tr>
+<tr>
+<td>管理端末 (RPi)</td>
+<td>RPi 単体故障で管理経路が全消失。SPOF そのもの</td>
+</tr>
+<tr>
+<td>外部 VPS</td>
+<td>コスト増 + VPS 自体の管理負荷 + VPS 侵害で tailnet の制御権を失う</td>
+</tr>
+</tbody>
+</table>
+<p>Tailscale をコントロールプレーンに使う目的は「自分のインフラが壊れた時でも管理経路を確保する」こと。その管理経路の依存先が自分のインフラ上にあったら、目的と矛盾する。</p>
+<h4 id="wireguard-tailscale-saas">WireGuard の設計が Tailscale SaaS のリスクを軽減<a class="headerlink" href="#wireguard-tailscale-saas" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>懸念</th>
+<th>実態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tailscale 社にメタデータが見える</td>
+<td>見えるのは「デバイスX が 時刻Y に IPアドレスZ から接続」程度。通信内容は WireGuard E2E 暗号化で復号不可。ホームラボの接続メタデータは実害が極めて小さい</td>
+</tr>
+<tr>
+<td>Tailscale 社が悪意の鍵を push</td>
+<td>理論上は coordination server が不正ピアの公開鍵を配布可能。ただしクライアント側で検知可能であり、Tailscale 社のビジネスを破壊する行為。現実的脅威ではない</td>
+</tr>
+<tr>
+<td>coordination server 障害</td>
+<td><strong>既存の WireGuard トンネルは動き続ける</strong>。coordination server は鍵交換の仲介のみで、確立済み接続には不要</td>
+</tr>
+<tr>
+<td>アカウント乗っ取り</td>
+<td>本ADRのセクション6「アカウント強化」で対策</td>
+</tr>
+</tbody>
+</table>
+<h4 id="headscale_1">Headscale が意味を持つケース（本環境には該当しない）<a class="headerlink" href="#headscale_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>デバイス 100台超で Tailscale 無料枠を超過する場合</li>
+<li>規制環境で外部 coordination server を使用できない場合</li>
+<li>coordination server を完全に自己管理したい知的好奇心（ただしコントロールプレーンの可用性と引き換え）</li>
+</ul>
+<h3 id="3-tailscale-pve">3. Tailscale のサーバー側配置: 全 PVE ベアメタル<a class="headerlink" href="#3-tailscale-pve" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>配置案</th>
+<th>利点</th>
+<th>欠点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-3 のみ（現状）</td>
+<td>攻撃面最小</td>
+<td>PVE-3 障害で管理不能</td>
+</tr>
+<tr>
+<td><strong>全 PVE ベアメタル（採用）</strong></td>
+<td><strong>どれか1台生存で管理可能</strong></td>
+<td><strong>攻撃面が増加（ACLで軽減）</strong></td>
+</tr>
+<tr>
+<td>専用ジャンプホスト VM</td>
+<td>隔離・ハードニング可</td>
+<td>VM は Ceph 依存。全 PVE 障害に脆弱</td>
+</tr>
+</tbody>
+</table>
+<p><strong>全 PVE ベアメタルに Tailscale を配置する根拠:</strong></p>
+<ul>
+<li>「PVE 全台カーネルパニック」は ADR-003 で想定済みの脅威。だが「1台だけ生存」の確率のほうが高く、その1台から復旧を開始できる</li>
+<li>ベアメタルなので Ceph / VM に依存しない</li>
+<li>Tailscale ACL で管理端末以外からの接続を拒否すれば、攻撃面の増加は最小限</li>
+<li>VM / LXC には入れない（PVE コンソール経由で到達可能なため不要）</li>
+</ul>
+<p>配置対象:</p>
+<table>
+<thead>
+<tr>
+<th>ノード</th>
+<th>Tailscale</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-1 (CPU ワーカー)</td>
+<td>あり</td>
+<td>ベアメタル緊急管理</td>
+</tr>
+<tr>
+<td>PVE-2 (CPU ワーカー)</td>
+<td>あり</td>
+<td>ベアメタル緊急管理</td>
+</tr>
+<tr>
+<td>PVE-3 (Lab CP)</td>
+<td>あり（既存）</td>
+<td>ベアメタル緊急管理</td>
+</tr>
+<tr>
+<td>PVE-GPU (HP Z8 G4)</td>
+<td>あり</td>
+<td>ベアメタル緊急管理</td>
+</tr>
+<tr>
+<td>PVE-DMZ-1 (M90q)</td>
+<td>あり</td>
+<td>DMZ ノード緊急管理</td>
+</tr>
+<tr>
+<td>管理端末 (VLAN 90)</td>
+<td>あり（既存）</td>
+<td>クライアント</td>
+</tr>
+<tr>
+<td>VM / LXC</td>
+<td>なし</td>
+<td>PVE コンソール経由で到達可能</td>
+</tr>
+<tr>
+<td>backup-node</td>
+<td>なし</td>
+<td>VLAN 240 の隔離原則を維持</td>
+</tr>
+<tr>
+<td>ゲーミング PC</td>
+<td>なし</td>
+<td>管理権限を一切置かない（ADR-003）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-tailscale-acl">4. Tailscale ACL のロックダウン<a class="headerlink" href="#4-tailscale-acl" title="Permanent link">&para;</a></h3>
+<p>Tailscale ACL を最小権限に設定する:</p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;acls&quot;: [
+    // 管理端末 → PVE ベアメタル: SSH + PVE WebUI のみ
+    {
+      &quot;action&quot;: &quot;accept&quot;,
+      &quot;src&quot;: [&quot;tag:mgmt&quot;],
+      &quot;dst&quot;: [
+        &quot;tag:pve:22&quot;,      // SSH
+        &quot;tag:pve:8006&quot;     // Proxmox WebUI
+      ]
+    },
+    // 管理端末 → PVE ベアメタル: Grafana (設定変更時のみ)
+    {
+      &quot;action&quot;: &quot;accept&quot;,
+      &quot;src&quot;: [&quot;tag:mgmt&quot;],
+      &quot;dst&quot;: [&quot;tag:pve-cp:3000&quot;]  // Grafana on PVE-3
+    }
+  ],
+
+  // 暗黙の deny-all: 上記以外は全て拒否
+
+  &quot;tagOwners&quot;: {
+    &quot;tag:mgmt&quot;: [&quot;autogroup:admin&quot;],
+    &quot;tag:pve&quot;:  [&quot;autogroup:admin&quot;],
+    &quot;tag:pve-cp&quot;: [&quot;autogroup:admin&quot;]
+  },
+
+  &quot;nodeAttrs&quot;: [
+    {
+      // 全ノードの鍵有効期限を 90 日に強制
+      &quot;target&quot;: [&quot;*&quot;],
+      &quot;attr&quot;:   [&quot;autoApprovers:exitNode=false&quot;]
+    }
+  ]
+}
+</code></pre></div>
+<p><strong>ポイント:</strong>
+- PVE ノード間の Tailscale 経由通信は許可しない（VLAN 200/250 で直接通信する）
+- 管理端末以外のデバイスが tailnet に参加しても、ACL で到達先がゼロ
+- Exit Node 機能は無効化（Tailscale 経由でインターネットに出る必要がない）</p>
+<h3 id="5">5. 日常運用と緊急時の使い分け<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>場面</th>
+<th>経路</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grafana でダッシュボード閲覧</td>
+<td>CF Tunnel</td>
+<td>日常的な read-only 操作</td>
+</tr>
+<tr>
+<td>Grafana のアラートルール変更</td>
+<td>Tailscale</td>
+<td>インフラ設定変更は管理プレーン</td>
+</tr>
+<tr>
+<td>Vaultwarden のパスワード利用</td>
+<td>CF Tunnel</td>
+<td>日常的なサービス利用</td>
+</tr>
+<tr>
+<td>Forgejo でコード閲覧・push</td>
+<td>CF Tunnel</td>
+<td>日常的なサービス利用</td>
+</tr>
+<tr>
+<td>PVE WebUI で VM 操作</td>
+<td>Tailscale</td>
+<td>ハイパーバイザ管理</td>
+</tr>
+<tr>
+<td>SSH でサーバーメンテナンス</td>
+<td>Tailscale</td>
+<td>インフラ管理</td>
+</tr>
+<tr>
+<td>CF 障害時のサービス確認</td>
+<td>Tailscale → PVE → VM</td>
+<td>フォールバック</td>
+</tr>
+<tr>
+<td>PVE 障害時の緊急復旧</td>
+<td>Tailscale → 生存ベアメタル</td>
+<td>最終手段</td>
+</tr>
+<tr>
+<td>ゲームサーバー接続（自宅）</td>
+<td>VLAN 10 直接</td>
+<td>最低レイテンシ</td>
+</tr>
+<tr>
+<td>ゲームサーバー接続（外出先）</td>
+<td>CF WARP</td>
+<td>データプレーン</td>
+</tr>
+<tr>
+<td>友人のゲーム接続</td>
+<td>CF WARP / playit.gg</td>
+<td>データプレーン</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-tailscale">6. Tailscale アカウントの強化<a class="headerlink" href="#6-tailscale" title="Permanent link">&para;</a></h3>
+<p>Tailscale SaaS を維持する以上、アカウント侵害が最大のリスク。以下で対策:</p>
+<table>
+<thead>
+<tr>
+<th>対策</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MFA をハードウェアキーに限定</td>
+<td>FIDO2/WebAuthn (YubiKey)。TOTP・SMS は無効化</td>
+</tr>
+<tr>
+<td>デバイス承認を手動に設定</td>
+<td>auto-approve 無効。新デバイス追加には管理者の明示的承認が必要</td>
+</tr>
+<tr>
+<td>Key expiry を有効化</td>
+<td>90日ごとに再認証を強制。盗まれた鍵の有効期間を限定</td>
+</tr>
+<tr>
+<td>Tailscale SSH を無効化</td>
+<td>SSH 認証は OS レベルの公開鍵認証で行う。Tailscale の SSH 機能に依存しない</td>
+</tr>
+<tr>
+<td>Auth key をリポジトリに保存しない</td>
+<td>Tailscale の auth key は SOPS 暗号化で管理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-grafana-cf-tunnel">7. Grafana の CF Tunnel 公開（新規）<a class="headerlink" href="#7-grafana-cf-tunnel" title="Permanent link">&para;</a></h3>
+<p>Grafana を CF Tunnel 経由でも閲覧可能にする。日常的なダッシュボード確認を CF 経由に移行し、Tailscale は管理操作（設定変更）時のみ使用する。</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ホスト名</td>
+<td>grafana.example.com</td>
+</tr>
+<tr>
+<td>内部サービス</td>
+<td>http://10.0.200.31:3000</td>
+</tr>
+<tr>
+<td>CF Access Policy</td>
+<td>Admins のみ</td>
+</tr>
+<tr>
+<td>Grafana 側設定</td>
+<td>CF 経由アクセスは Viewer ロール（read-only）</td>
+</tr>
+<tr>
+<td>管理操作</td>
+<td>Tailscale 経由の直接アクセスで Admin ロール</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">結果<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>責務分離</strong>: データプレーン（CF ZT）とコントロールプレーン（Tailscale）を明確に分離。一方の侵害が他方に波及しない</li>
+<li><strong>CF 障害耐性</strong>: CF 大規模障害時も Tailscale 経由で全 PVE ノードを管理可能。デッドロック回避</li>
+<li><strong>CF アカウント侵害耐性</strong>: CF Dashboard が乗っ取られても、管理プレーン（Tailscale）は独立した認証・経路で動作。攻撃者は管理 SSH に到達不可</li>
+<li><strong>PVE 部分障害耐性</strong>: 全ベアメタルに Tailscale を配置することで、1台でも生存すればそこから復旧開始可能</li>
+<li><strong>Headscale 不採用</strong>: 鶏と卵問題により、コントロールプレーンの依存先を自インフラに置く矛盾を回避</li>
+<li><strong>運用負荷</strong>: Tailscale SaaS のため coordination server の運用不要。ACL 設定のみ管理</li>
+<li><strong>コスト</strong>: Tailscale 無料枠内（デバイス数 &lt; 100、ユーザー数 &lt; 3）</li>
+<li><strong>Grafana 二重公開</strong>: 日常閲覧は CF Tunnel（Viewer）、管理操作は Tailscale（Admin）で権限分離</li>
+</ul>
+<h3 id="adr">関連 ADR<a class="headerlink" href="#adr" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../003-backup-architecture-2026-02/">ADR-003</a>: 管理端末の物理分離（VLAN 90）、ゲーミング PC からの Tailscale 排除</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
