@@ -1,0 +1,2743 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+        <link rel="prev" href="../007-oob-airgap-operation-2026-03/">
+      
+      
+        <link rel="next" href="../../runbooks/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>ADR-008 FW冗長化（CARP）とVP6670マイグレーション - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-008-fwcarpvp6670" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../.." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../hardware/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../local-llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../003-backup-architecture-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 バックアップアーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../004-remote-access-separation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 外部アクセス責務分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../005-dmz-network-isolation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 DMZネットワーク物理分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../006-oob-management-infrastructure-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 OOB管理基盤
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../007-oob-airgap-operation-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 OOBエアギャップ運用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="コンテキスト">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ispmap-eipv6carp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ISP回線：MAP-E（IPv6プラス）とCARPの関係
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ハードウェア詳細
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ハードウェア詳細">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-aprotectli-vp2440backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入予定 Phase A：Protectli VP2440（BACKUP役）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-bprotectli-vp6670master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入予定 Phase B：Protectli VP6670（MASTER役）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代替案と却下理由
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FWインターフェース割り当て
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfp-dac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SFP+トランシーバー / DACケーブル選定
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        段階別 物理配線構成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="段階別 物理配線構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-a-vp2440-day-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase A: VP2440 単独（Day 1）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-b-carp-vp6670" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B: CARP導入 + 最終アーキテクチャ確立（VP6670追加）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-c-vp6670-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase C: VP6670 MASTER化（本番切替）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-d-10gbe-wanisp-10gbps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase D: 10GbE WAN移行（ISP 10Gbps契約時）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ケーブル累計まとめ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10gbe-wanphase-disp-10gbps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10GbE WAN対応（Phase D、ISP 10Gbps契約時）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        マイグレーション手順詳細
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="マイグレーション手順詳細">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-0-vp6670" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: VP6670の準備（オフライン、ダウンタイムゼロ）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-ab-carp9010" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase A→B: 最終アーキテクチャへの移行 + CARP構成投入（約90分、瞬断10秒以内）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        フェイルオーバーテスト（約30分）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-bc-vp6670master51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B→C: VP6670をMASTERに昇格（5分、ダウンタイム1秒以内）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-c-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase C後: 安定稼働確認（1週間観察）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        得られるもの
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレードオフ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="コンテキスト">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ispmap-eipv6carp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ISP回線：MAP-E（IPv6プラス）とCARPの関係
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ハードウェア詳細
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ハードウェア詳細">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-aprotectli-vp2440backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入予定 Phase A：Protectli VP2440（BACKUP役）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-bprotectli-vp6670master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入予定 Phase B：Protectli VP6670（MASTER役）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        代替案と却下理由
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FWインターフェース割り当て
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfp-dac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SFP+トランシーバー / DACケーブル選定
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        段階別 物理配線構成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="段階別 物理配線構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-a-vp2440-day-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase A: VP2440 単独（Day 1）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-b-carp-vp6670" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B: CARP導入 + 最終アーキテクチャ確立（VP6670追加）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-c-vp6670-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase C: VP6670 MASTER化（本番切替）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-d-10gbe-wanisp-10gbps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase D: 10GbE WAN移行（ISP 10Gbps契約時）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ケーブル累計まとめ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10gbe-wanphase-disp-10gbps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10GbE WAN対応（Phase D、ISP 10Gbps契約時）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        マイグレーション手順詳細
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="マイグレーション手順詳細">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-0-vp6670" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0: VP6670の準備（オフライン、ダウンタイムゼロ）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-ab-carp9010" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase A→B: 最終アーキテクチャへの移行 + CARP構成投入（約90分、瞬断10秒以内）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        フェイルオーバーテスト（約30分）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-bc-vp6670master51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B→C: VP6670をMASTERに昇格（5分、ダウンタイム1秒以内）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-c-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase C後: 安定稼働確認（1週間観察）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        得られるもの
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレードオフ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="adr-008-fwcarpvp6670">ADR-008: FW冗長化（CARP）とVP6670への段階的マイグレーション<a class="headerlink" href="#adr-008-fwcarpvp6670" title="Permanent link">&para;</a></h1>
+<h2 id="_1">ステータス<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>承認（2026-03-07）</p>
+<h2 id="_2">コンテキスト<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Protectli VP2440 を初代FWとして調達し、<strong>単一障害点</strong>のない冗長構成を最初から見据えて設計する。
+FW障害時のネットワーク全断・リモートワーク中の業務停止リスクをゼロにすることが目標。</p>
+<p>より高性能な <strong>Protectli VP6670</strong>（Intel i7-1255U, 10C/12T）をMASTERとして追加し、
+将来の10Gbps WAN環境・Suricata IDS/IPSの処理負荷増大にも対応可能なCARPペアを構成する。</p>
+<p>VP6670 を CARP MASTER（主系）、VP2440 を CARP BACKUP（待機系）として運用する。
+Phase B の配線設計は <strong>10GbE WAN対応を前提とした最終形</strong>とし、ISP 10Gbps契約時の機材買い直しをゼロにする。</p>
+<h3 id="ispmap-eipv6carp">ISP回線：MAP-E（IPv6プラス）とCARPの関係<a class="headerlink" href="#ispmap-eipv6carp" title="Permanent link">&para;</a></h3>
+<p>当環境の回線はIPv6プラス（MAP-E方式）であり、PPPoEではなくMAP-Eを使用している。</p>
+<p>MAP-Eはステートレスなため、CARPとの組み合わせは以下のように動作する：</p>
+<div class="highlight"><pre><span></span><code>MAP-E CARPの動作原理:
+  両FWが同じIPv6 WANプレフィックスを取得 (DHCPv6-PD)
+      ↓
+  IPv6プレフィックスからMAP-E IPv4アドレス・ポート範囲が決定論的に導出される
+      ↓
+  CARP VIP = 仮想IPv6アドレス → フェイルオーバー時もMAP-E導出結果が同一
+      ↓
+  MASTER/BACKUP切替後も同一IPv4/ポート範囲で通信継続
+</code></pre></div>
+<p>OPNsenseのMAP-E + CARP構成はサポートされており、
+WANインターフェースにCARPのVHIDを設定することで透過的なフェイルオーバーが可能。</p>
+<hr />
+<h2 id="_3">ハードウェア詳細<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="phase-aprotectli-vp2440backup">購入予定 Phase A：Protectli VP2440（BACKUP役）<a class="headerlink" href="#phase-aprotectli-vp2440backup" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>注</strong>: 2026-03-05時点でバックオーダー中。在庫状況を要確認。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>仕様</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>価格</td>
+<td>$399（本体のみ）</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Intel N150 Quad Core、最大3.6GHz（Alder Lake-N）</td>
+</tr>
+<tr>
+<td>NIC</td>
+<td>2x Intel X710-BM2 SFP+（10GbE）＋ 2x Intel I226-V（2.5GbE RJ-45）</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>1x SO-DIMM DDR5-4800、最大64GB（<strong>シングルチャネル</strong>・1スロット限定）</td>
+</tr>
+<tr>
+<td>ストレージ</td>
+<td>M.2 2280 NVMe + 32GB eMMC</td>
+</tr>
+<tr>
+<td>BIOS</td>
+<td>coreboot対応</td>
+</tr>
+<tr>
+<td>消費電力</td>
+<td>最大45W、ファンレス</td>
+</tr>
+<tr>
+<td>URL</td>
+<td>https://protectli.com/product/vp2440/</td>
+</tr>
+</tbody>
+</table>
+<p><strong>VP2440購入構成（推奨）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>オプション</th>
+<th>選択</th>
+<th>価格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本体</td>
+<td>VP2440 Core</td>
+<td>$399</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>16GB Crucial DDR5（MASTER昇格時の負荷を考慮）</td>
+<td>$235</td>
+</tr>
+<tr>
+<td>NVMe SSD</td>
+<td>500GB Kingston NV3 PCIe 4.0（32GB eMMCのみより信頼性・寿命向上）</td>
+<td>$140</td>
+</tr>
+<tr>
+<td>BIOS</td>
+<td>coreboot（セキュリティ優先）</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>SFP+</td>
+<td>No SFP+（別途DAC購入が安価）</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>TPM</td>
+<td>Protectli TPM-02（coreboot 実測起動・後付け不可）</td>
+<td>$49</td>
+</tr>
+<tr>
+<td><strong>合計</strong></td>
+<td></td>
+<td><strong>$823</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="phase-bprotectli-vp6670master">購入予定 Phase B：Protectli VP6670（MASTER役）<a class="headerlink" href="#phase-bprotectli-vp6670master" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>仕様</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>価格</td>
+<td>$929（本体のみ）</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Intel i7-1255U 10コア/12スレッド、最大4.7GHz（Alder Lake-U）</td>
+</tr>
+<tr>
+<td>NIC</td>
+<td>2x Intel X710 SFP+（10GbE）＋ 4x Intel I226（2.5GbE RJ-45）</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>2x SO-DIMM DDR5-4800、最大96GB</td>
+</tr>
+<tr>
+<td>ストレージ</td>
+<td>M.2 2280 NVMe ＋ 2.5インチSATAベイ×2</td>
+</tr>
+<tr>
+<td>BIOS</td>
+<td>coreboot選択可（AMI/corebootをチェックアウト時に選択）</td>
+</tr>
+<tr>
+<td>消費電力</td>
+<td>120W電源、オンデマンドファン</td>
+</tr>
+<tr>
+<td>URL</td>
+<td>https://protectli.com/product/vp6670/</td>
+</tr>
+</tbody>
+</table>
+<p><strong>VP6670購入構成（推奨）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>オプション</th>
+<th>選択</th>
+<th>価格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本体</td>
+<td>VP6670 Core</td>
+<td>$929</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>2×16GB Crucial DDR5 / 32GB合計（デュアルチャネル、10GbE+Suricata負荷を考慮）</td>
+<td>$470</td>
+</tr>
+<tr>
+<td>NVMe SSD</td>
+<td>500GB Kingston NV3 PCIe 4.0</td>
+<td>$140</td>
+</tr>
+<tr>
+<td>BIOS</td>
+<td>coreboot（セキュリティ優先）</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>SFP+</td>
+<td>No SFP+（別途DAC購入が安価）</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>TPM</td>
+<td>Protectli TPM-02（coreboot 実測起動・後付け不可）</td>
+<td>$49</td>
+</tr>
+<tr>
+<td><strong>合計</strong></td>
+<td></td>
+<td><strong>$1,588</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_4">代替案と却下理由<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>候補</th>
+<th>価格</th>
+<th>却下理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VP6650（i5-1235U）</td>
+<td>$749</td>
+<td>コア数・クロック差が小さいが、将来のIDS/IPS負荷を考えるとi7が安全マージン大</td>
+</tr>
+<tr>
+<td>VP6630（i3-1215U）</td>
+<td>$589</td>
+<td>6コア止まり。10Gbps WAN時のSuricata処理が不安</td>
+</tr>
+<tr>
+<td>VP2440×2（同型CARP）</td>
+<td>$399+$399</td>
+<td>性能が現行と同等。主系をアップグレードする本来の目的を果たさない</td>
+</tr>
+<tr>
+<td>Qotom/Topton製品</td>
+<td>不明</td>
+<td>coreboot非対応。VP2440との実績互換性が不明</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fw">FWインターフェース割り当て<a class="headerlink" href="#fw" title="Permanent link">&para;</a></h3>
+<p><strong>Phase A（VP2440単独・一時構成）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>ポート</th>
+<th>VP2440（単独FW）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RJ45-1</td>
+<td>WAN（ONU RJ-45直結、一時）</td>
+</tr>
+<tr>
+<td>SFP+1</td>
+<td>LAN → コアスイッチ（10GbE）</td>
+</tr>
+<tr>
+<td>SFP+2</td>
+<td>DMZ → DMZスイッチ（10GbE）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase B以降（CARP最終構成・10GbE WAN対応済み）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>ポート</th>
+<th>VP6670（MASTER）</th>
+<th>VP2440（BACKUP）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RJ45-1</td>
+<td>予備</td>
+<td>予備</td>
+</tr>
+<tr>
+<td>RJ45-2</td>
+<td>pfsync専用（直結）</td>
+<td>pfsync専用（直結）</td>
+</tr>
+<tr>
+<td>SFP+1</td>
+<td>LAN/DMZ → per-VP6670-SW（10GbE）</td>
+<td>LAN/DMZ → per-VP2440-SW（10GbE）</td>
+</tr>
+<tr>
+<td>SFP+2</td>
+<td>WAN → WAN SW CRS305（10GbE）</td>
+<td>WAN → WAN SW CRS305（10GbE）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Phase B で SFP+2 を WAN に固定することで、ISP 10Gbps 契約時も <strong>FW・スイッチの買い直しゼロ</strong>。
+WAN SW（CRS305）の ONU 接続を RJ-45 → SFP+ ポートに差し替えるだけで 10GbE WAN が完成する（Phase D）。</p>
+</blockquote>
+<hr />
+<h2 id="sfp-dac">SFP+トランシーバー / DACケーブル選定<a class="headerlink" href="#sfp-dac" title="Permanent link">&para;</a></h2>
+<p>両FWのSFP+ポートとコアスイッチ・DMZスイッチ間の接続にはDAC（Direct Attach Cable）を使用する。</p>
+<table>
+<thead>
+<tr>
+<th>品名</th>
+<th>価格/本</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DAC-10G-1M（1m DAC）</td>
+<td>$11</td>
+<td>ラック内・近距離接続（推奨）</td>
+</tr>
+<tr>
+<td>DAC-10G-3M（3m DAC）</td>
+<td>$15</td>
+<td>やや距離がある場合</td>
+</tr>
+<tr>
+<td>SFP-10G-SR（光・MMF）</td>
+<td>$16</td>
+<td>光ファイバー配線が必要な場合</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>コアスイッチ（CRS305）・DMZスイッチ（CRS305）はIntel X710との相互接続実績あり。MSA準拠DACのためベンダー間互換性は問題なし。</p>
+</blockquote>
+<hr />
+<h2 id="_5">段階別 物理配線構成<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="phase-a-vp2440-day-1">Phase A: VP2440 単独（Day 1）<a class="headerlink" href="#phase-a-vp2440-day-1" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>VP6670購入前。現行運用をそのまま正式化する段階。</strong></p>
+</blockquote>
+<pre class="mermaid"><code>flowchart TB
+    ONU([ONU / ISP回線&lt;br&gt;IPv6プラス MAP-E])
+
+    subgraph FW["VP2440 — 単独FW"]
+        V4_WAN["RJ45-1 WAN"]
+        V4_SFP1["SFP+1 LAN"]
+        V4_SFP2["SFP+2 DMZ"]
+    end
+
+    CORE["コアスイッチ&lt;br&gt;CRS305-1G-4S+"]
+    DMZSW["DMZスイッチ&lt;br&gt;CRS305-1G-4S+&lt;br&gt;（SwOS）"]
+
+    ONU --&gt;|"① RJ-45"| V4_WAN
+    V4_SFP1 --&gt;|"② DAC-10G-1M"| CORE
+    V4_SFP2 --&gt;|"③ DAC-10G-1M"| DMZSW
+
+    style FW fill:#2d4a1a,stroke:#4a8c2a,color:#fff</code></pre>
+<p><strong>Phase A 必要ケーブル：</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>区間</th>
+<th>種別</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td>ONU → VP2440 RJ45-1</td>
+<td>RJ-45</td>
+<td>ONU付属または手持ち流用</td>
+</tr>
+<tr>
+<td>②</td>
+<td>VP2440 SFP+1 → コアSW</td>
+<td>DAC-10G-1M × 1</td>
+<td><strong>新規購入 $11</strong></td>
+</tr>
+<tr>
+<td>③</td>
+<td>VP2440 SFP+2 → DMZ SW</td>
+<td>DAC-10G-1M × 1</td>
+<td><strong>新規購入 $11</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase A 調達コスト：DAC × 2 = $22</strong></p>
+<hr />
+<h3 id="phase-b-carp-vp6670">Phase B: CARP導入 + 最終アーキテクチャ確立（VP6670追加）<a class="headerlink" href="#phase-b-carp-vp6670" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>VP6670購入後。配線を10GbE WAN対応の最終形に組み直しつつCARPを構成する段階。</strong>
+この時点では VP2440 が MASTER のまま（安全のため）。
+<strong>ここで追加するスイッチ類は Phase D（10GbE WAN移行）まで買い直し不要。</strong></p>
+</blockquote>
+<pre class="mermaid"><code>flowchart TB
+    ONU([ONU / ISP回線&lt;br&gt;IPv6プラス MAP-E&lt;br&gt;現状 1GbE RJ-45])
+
+    WANSW["WAN SW&lt;br&gt;CRS305-1G-4S+ (SwOS)&lt;br&gt;★10GbE対応済み"]
+
+    subgraph FW_M["VP2440 — CARP MASTER（暫定）"]
+        direction LR
+        V4_PSYNC["RJ45-2 pfsync"]
+        V4_SFP1["SFP+1 LAN/DMZ"]
+        V4_SFP2["SFP+2 WAN"]
+    end
+
+    subgraph FW_B["VP6670 — CARP BACKUP（暫定）"]
+        direction LR
+        V6_PSYNC["RJ45-2 pfsync"]
+        V6_SFP1["SFP+1 LAN/DMZ"]
+        V6_SFP2["SFP+2 WAN"]
+    end
+
+    PERSW4["per-VP2440-SW&lt;br&gt;CRS305-1G-4S+ (SwOS)"]
+    PERSW6["per-VP6670-SW&lt;br&gt;CRS305-1G-4S+ (SwOS)"]
+
+    CORE["コアスイッチ&lt;br&gt;CRS305-1G-4S+"]
+    DMZSW["DMZスイッチ&lt;br&gt;CRS305-1G-4S+&lt;br&gt;(SwOS)"]
+
+    ONU --&gt;|"① RJ-45&lt;br&gt;Phase A流用"| WANSW
+    WANSW --&gt;|"② DAC-10G-1M"| V4_SFP2
+    WANSW --&gt;|"③ DAC-10G-1M"| V6_SFP2
+
+    V4_PSYNC &lt;--&gt;|"④ RJ-45 直結"| V6_PSYNC
+
+    V4_SFP1 --&gt;|"⑤ DAC-10G-1M"| PERSW4
+    PERSW4  --&gt;|"⑥ DAC-10G-1M"| CORE
+    PERSW4  --&gt;|"⑦ DAC-10G-1M"| DMZSW
+
+    V6_SFP1 --&gt;|"⑧ DAC-10G-1M"| PERSW6
+    PERSW6  --&gt;|"⑨ DAC-10G-1M"| CORE
+    PERSW6  --&gt;|"⑩ DAC-10G-1M"| DMZSW
+
+    style FW_M fill:#2d4a1a,stroke:#4a8c2a,color:#fff
+    style FW_B fill:#1a3a5c,stroke:#2d6aa0,color:#fff
+    style WANSW fill:#3a2d1a,stroke:#8c6a2d,color:#fff
+    style PERSW4 fill:#3a1a5c,stroke:#8c2da0,color:#fff
+    style PERSW6 fill:#3a1a5c,stroke:#8c2da0,color:#fff</code></pre>
+<blockquote>
+<p><strong>per-FW SW の VLAN 設定（CRS305 SwOS）：</strong>
+- SFP+1（FW 上流）: trunk（全 VLAN タグ付き）
+- SFP+2（→ コアSW）: trunk（VLAN 100 DMZ を除く全 VLAN）
+- SFP+3（→ DMZ SW）: trunk（VLAN 100 のみ）</p>
+<p>これにより ADR-005「DMZ トラフィックがコアSWを通過しない」原則を維持する。</p>
+</blockquote>
+<p><strong>Phase B 追加ケーブル（Phase A からの差分）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>区間</th>
+<th>種別</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td>ONU → WAN SW RJ-45</td>
+<td>RJ-45</td>
+<td>Phase A ①を流用（短く延長）</td>
+</tr>
+<tr>
+<td>②</td>
+<td>WAN SW SFP+1 → VP2440 SFP+2</td>
+<td>DAC-10G-1M</td>
+<td><strong>新規 $11</strong></td>
+</tr>
+<tr>
+<td>③</td>
+<td>WAN SW SFP+2 → VP6670 SFP+2</td>
+<td>DAC-10G-1M</td>
+<td><strong>新規 $11</strong></td>
+</tr>
+<tr>
+<td>④</td>
+<td>VP2440 RJ45-2 ↔ VP6670 RJ45-2</td>
+<td>RJ-45 直結</td>
+<td><strong>新規 ~$3</strong>（pfsync専用）</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td>VP2440 SFP+1 → per-VP2440-SW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td>Phase A ② 流用可（距離確認要）</td>
+</tr>
+<tr>
+<td>⑥</td>
+<td>per-VP2440-SW SFP+2 → コアSW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td><strong>新規 $11</strong></td>
+</tr>
+<tr>
+<td>⑦</td>
+<td>per-VP2440-SW SFP+3 → DMZ SW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td>Phase A ③ 流用可（距離確認要）</td>
+</tr>
+<tr>
+<td>⑧</td>
+<td>VP6670 SFP+1 → per-VP6670-SW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td><strong>新規 $11</strong></td>
+</tr>
+<tr>
+<td>⑨</td>
+<td>per-VP6670-SW SFP+2 → コアSW SFP+2</td>
+<td>DAC-10G-1M</td>
+<td><strong>新規 $11</strong></td>
+</tr>
+<tr>
+<td>⑩</td>
+<td>per-VP6670-SW SFP+3 → DMZ SW SFP+2</td>
+<td>DAC-10G-1M</td>
+<td><strong>新規 $11</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⑤⑦ は per-FW SW の設置位置次第で Phase A のDAC（$11×2）を流用できる。
+流用できない場合も追加 $22 で対応。</p>
+</blockquote>
+<p><strong>Phase B 追加調達コスト（ケーブル・スイッチのみ、VP6670本体除く）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>品目</th>
+<th>数量</th>
+<th>単価</th>
+<th>小計</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRS305-1G-4S+（WAN SW）</td>
+<td>1</td>
+<td>$100</td>
+<td>$100</td>
+</tr>
+<tr>
+<td>CRS305-1G-4S+（per-FW SW × 2）</td>
+<td>2</td>
+<td>$100</td>
+<td>$200</td>
+</tr>
+<tr>
+<td>DAC-10G-1M（新規、②③⑥⑧⑨⑩）</td>
+<td>6</td>
+<td>$11</td>
+<td>$66</td>
+</tr>
+<tr>
+<td>RJ-45 パッチ（④）</td>
+<td>1</td>
+<td>~$3</td>
+<td>~$3</td>
+</tr>
+<tr>
+<td><strong>小計</strong></td>
+<td></td>
+<td></td>
+<td><strong>~$369</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="phase-c-vp6670-master">Phase C: VP6670 MASTER化（本番切替）<a class="headerlink" href="#phase-c-vp6670-master" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>物理配線は Phase B と完全に同一。ソフトウェア設定変更のみ。</strong></p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>物理変更: なし（新規ケーブル・機材の購入不要）
+
+設定変更のみ:
+  VP6670: advskew = 0  （最高優先 → MASTERに昇格）
+  VP2440: advskew = 100 （低優先  → BACKUPに降格）
+
+→ 設定保存後、CARP自動フェイルオーバーで1秒以内に切替完了
+</code></pre></div>
+<p><strong>Phase C 追加調達コスト：$0</strong></p>
+<hr />
+<h3 id="phase-d-10gbe-wanisp-10gbps">Phase D: 10GbE WAN移行（ISP 10Gbps契約時）<a class="headerlink" href="#phase-d-10gbe-wanisp-10gbps" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>ISP 側の ONT 交換のみがトリガー。FW・スイッチ類の変更不要。</strong>
+WAN SW（CRS305）の ONU 接続ポートを差し替えるだけで完結する。</p>
+</blockquote>
+<pre class="mermaid"><code>flowchart TB
+    ONT_NEW([ONT 10GbE&lt;br&gt;SFP+ 出力&lt;br&gt;★ISP提供])
+
+    WANSW["WAN SW&lt;br&gt;CRS305-1G-4S+ (SwOS)&lt;br&gt;Phase Bから流用"]
+
+    note1["変更箇所:&lt;br&gt;ONU RJ-45 → 外す&lt;br&gt;ONT SFP+ → SFP+3 に差し替え"]
+
+    ONT_NEW --&gt;|"① DAC or SFP+ モジュール&lt;br&gt;★新規 $11〜$44"| WANSW
+
+    style ONT_NEW fill:#1a3a5c,stroke:#2d6aa0,color:#fff
+    style WANSW fill:#3a2d1a,stroke:#8c6a2d,color:#fff
+    style note1 fill:#2d2d2d,stroke:#666,color:#ccc</code></pre>
+<p><strong>変更内容：</strong></p>
+<table>
+<thead>
+<tr>
+<th>変更項目</th>
+<th>Phase B/C</th>
+<th>Phase D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ONU接続</td>
+<td>ONU RJ-45 → WAN SW RJ-45</td>
+<td>ONT SFP+ → WAN SW SFP+3</td>
+</tr>
+<tr>
+<td>FW WANポート</td>
+<td>VP2440/VP6670 SFP+2（変更なし）</td>
+<td>同左（変更なし）</td>
+</tr>
+<tr>
+<td>per-FW SW</td>
+<td>変更なし</td>
+<td>変更なし</td>
+</tr>
+<tr>
+<td>コアSW / DMZ SW</td>
+<td>変更なし</td>
+<td>変更なし</td>
+</tr>
+<tr>
+<td>CARP 設定</td>
+<td>変更なし</td>
+<td>変更なし</td>
+</tr>
+<tr>
+<td>MAP-E 設定</td>
+<td>変更なし</td>
+<td>変更なし</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase D 追加調達：ONT接続ケーブル/モジュール × 1 = $11〜$44（ONTポート形状による）</strong></p>
+<blockquote>
+<p>ONT の出力が SFP+ の場合: DAC-10G-1M ($11)
+ONT の出力が RJ-45 10GBASE-T の場合: SFP-10G-T モジュール ($44) を WAN SW SFP+3 に装着</p>
+</blockquote>
+<p><strong>VP2440 BACKUP昇格時の注意（Phase D 以降）：</strong></p>
+<p>VP6670 故障で VP2440 N150（4コア）が MASTER に昇格した場合、
+10Gbps 環境では Suricata のインライン処理が律速になる可能性がある。
+緊急時 Runbook：VP2440 が長期 MASTER 時は Suricata を Tap/Monitor モードに切り替えてスループットを確保する。</p>
+<hr />
+<h3 id="_6">ケーブル累計まとめ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>フェーズ</th>
+<th>追加品目</th>
+<th>追加コスト</th>
+<th>累計コスト（ケーブル・SW）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase A</td>
+<td>DAC × 2</td>
+<td>$22</td>
+<td>$22</td>
+</tr>
+<tr>
+<td>Phase B</td>
+<td>CRS305 × 3 + DAC × 6 + RJ-45 × 1</td>
+<td>~$369</td>
+<td>~$391</td>
+</tr>
+<tr>
+<td>Phase C</td>
+<td>なし</td>
+<td>$0</td>
+<td>~$391</td>
+</tr>
+<tr>
+<td>Phase D</td>
+<td>ケーブル/モジュール × 1</td>
+<td>$11〜$44</td>
+<td>~$402〜$435</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>区間</th>
+<th>種別</th>
+<th>Phase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td>ONU/ONT → WAN SW</td>
+<td>RJ-45（B）/ SFP+（D）</td>
+<td>A→B→D</td>
+</tr>
+<tr>
+<td>②</td>
+<td>WAN SW SFP+1 → VP2440 SFP+2</td>
+<td>DAC-10G-1M</td>
+<td>B</td>
+</tr>
+<tr>
+<td>③</td>
+<td>WAN SW SFP+2 → VP6670 SFP+2</td>
+<td>DAC-10G-1M</td>
+<td>B</td>
+</tr>
+<tr>
+<td>④</td>
+<td>VP2440 RJ45-2 ↔ VP6670 RJ45-2</td>
+<td>RJ-45 直結（pfsync）</td>
+<td>B</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td>VP2440 SFP+1 → per-VP2440-SW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td>A→B</td>
+</tr>
+<tr>
+<td>⑥</td>
+<td>per-VP2440-SW SFP+2 → コアSW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td>B</td>
+</tr>
+<tr>
+<td>⑦</td>
+<td>per-VP2440-SW SFP+3 → DMZ SW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td>A→B</td>
+</tr>
+<tr>
+<td>⑧</td>
+<td>VP6670 SFP+1 → per-VP6670-SW SFP+1</td>
+<td>DAC-10G-1M</td>
+<td>B</td>
+</tr>
+<tr>
+<td>⑨</td>
+<td>per-VP6670-SW SFP+2 → コアSW SFP+2</td>
+<td>DAC-10G-1M</td>
+<td>B</td>
+</tr>
+<tr>
+<td>⑩</td>
+<td>per-VP6670-SW SFP+3 → DMZ SW SFP+2</td>
+<td>DAC-10G-1M</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<p><strong>単一障害点：① ONU〜WAN SW 間のみ（ISP 側制約のため許容範囲）</strong></p>
+<hr />
+<h2 id="_7">決定<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="_8">構成<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>決定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CARP MASTER（Phase C以降）</td>
+<td>VP6670（i7-1255U）</td>
+</tr>
+<tr>
+<td>CARP BACKUP（Phase C以降）</td>
+<td>VP2440（N150）</td>
+</tr>
+<tr>
+<td>pfsync接続</td>
+<td>VP6670 RJ45-2 ↔ VP2440 RJ45-2（直結、専用物理リンク）</td>
+</tr>
+<tr>
+<td>WAN SW</td>
+<td>CRS305-1G-4S+（SwOS）1台（Phase B投入、10GbE WAN対応済み）</td>
+</tr>
+<tr>
+<td>per-FW分配SW</td>
+<td>CRS305-1G-4S+（SwOS）× 2台（VP6670用・VP2440用、Phase B投入）</td>
+</tr>
+<tr>
+<td>FW WANポート</td>
+<td>SFP+2（Phase B以降、10GbE対応済み）</td>
+</tr>
+<tr>
+<td>FW→per-FW SW接続</td>
+<td>DAC-10G-1M × 2（各FWの SFP+1）</td>
+</tr>
+<tr>
+<td>per-FW SW→コアSW接続</td>
+<td>DAC-10G-1M × 2（各 per-FW SW SFP+2）</td>
+</tr>
+<tr>
+<td>per-FW SW→DMZ SW接続</td>
+<td>DAC-10G-1M × 2（各 per-FW SW SFP+3）</td>
+</tr>
+<tr>
+<td>FW→WAN SW接続</td>
+<td>DAC-10G-1M × 2（各FWの SFP+2）</td>
+</tr>
+<tr>
+<td>CARP VHID</td>
+<td>WAN: VHID 1 / LAN各VLAN: VHID 10〜250（VLAN番号対応）</td>
+</tr>
+<tr>
+<td>CARP切替時間</td>
+<td>1秒以内（pfsyncによるセッション状態同期）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10gbe-wanphase-disp-10gbps">10GbE WAN対応（Phase D、ISP 10Gbps契約時）<a class="headerlink" href="#10gbe-wanphase-disp-10gbps" title="Permanent link">&para;</a></h3>
+<p>Phase B の配線設計で対応完了済み。ISP 側 ONT 交換時に以下の 1 作業のみ：</p>
+<ul>
+<li>WAN SW（CRS305）の ONU 接続を RJ-45 → SFP+3 に差し替える</li>
+<li>新規スイッチ・FW・DAC の追加購入は不要（ケーブル/モジュール 1 本 $11〜$44 のみ）</li>
+</ul>
+<hr />
+<h2 id="_9">マイグレーション手順詳細<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<h3 id="phase-0-vp6670">Phase 0: VP6670の準備（オフライン、ダウンタイムゼロ）<a class="headerlink" href="#phase-0-vp6670" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>作業場所: 現行ネットワーク外
+所要時間: 約2時間
+</code></pre></div>
+<ol>
+<li>VP6670にOPNsenseをインストール（coreboot BIOSで起動）</li>
+<li>VP2440の設定をエクスポート（System &gt; Configuration &gt; Backups）</li>
+<li>VP6670にインポートし、基本設定を確認</li>
+<li>VP6670単体でのルーティング・NAT動作テスト（別回線またはテスト環境）</li>
+<li>MAP-E + CARP設定の事前検証</li>
+</ol>
+<h3 id="phase-ab-carp9010">Phase A→B: 最終アーキテクチャへの移行 + CARP構成投入（約90分、瞬断10秒以内）<a class="headerlink" href="#phase-ab-carp9010" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>ダウンタイム: WAN SW 挿入時の瞬断（10秒以内）のみ
+</code></pre></div>
+<ol>
+<li>WAN SW（CRS305 SwOS）と per-FW SW × 2（CRS305 SwOS）をラック/棚に設置</li>
+<li>per-VP2440-SW の VLAN 設定</li>
+<li>SFP+1（VP2440 上流）: trunk 全 VLAN</li>
+<li>SFP+2（→ コアSW）: trunk VLAN 100 を除く全 VLAN</li>
+<li>SFP+3（→ DMZ SW）: VLAN 100 のみ</li>
+<li>per-VP6670-SW も同様に VLAN 設定</li>
+<li><strong>瞬断ここのみ（10秒以内）</strong>: VP2440 SFP+1 を一時切断し per-VP2440-SW 経由に組み直す</li>
+<li>⑤ VP2440 SFP+1 → per-VP2440-SW SFP+1</li>
+<li>⑥ per-VP2440-SW SFP+2 → コアSW SFP+1</li>
+<li>⑦ per-VP2440-SW SFP+3 → DMZ SW SFP+1</li>
+<li>VP2440 の WAN インターフェースを RJ45-1 から SFP+2 に変更（OPNsense 設定）</li>
+<li>WAN SW CRS305 RJ-45 ← ONU ①</li>
+<li>WAN SW SFP+1 → VP2440 SFP+2 ② （DAC接続）</li>
+<li>VP6670 をラックに設置、以下をケーブル接続</li>
+<li>③ WAN SW SFP+2 → VP6670 SFP+2</li>
+<li>④ VP2440 RJ45-2 ↔ VP6670 RJ45-2（pfsync直結）</li>
+<li>⑧ VP6670 SFP+1 → per-VP6670-SW SFP+1</li>
+<li>⑨ per-VP6670-SW SFP+2 → コアSW SFP+2</li>
+<li>⑩ per-VP6670-SW SFP+3 → DMZ SW SFP+2</li>
+<li>VP2440 で CARP の設定を追加</li>
+<li>HASync (pfsync): <code>System &gt; High Availability</code></li>
+<li>CARP VIP追加: 各インターフェース（WAN/LAN VLAN群/DMZ）→ <code>Firewall &gt; Virtual IPs</code></li>
+<li>VP2440 の advskew=0（MASTER）、VP6670 の advskew=100（BACKUP）</li>
+<li>VP6670 を BACKUP として同期（VP2440→VP6670 へ設定プッシュ）</li>
+<li>動作確認：VP2440 が MASTER、VP6670 が BACKUP</li>
+</ol>
+<h3 id="30">フェイルオーバーテスト（約30分）<a class="headerlink" href="#30" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>ダウンタイム: テスト時に1秒×数回
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># VP2440のCARPを一時無効化 → VP6670がMASTERに昇格することを確認</span>
+<span class="c1"># OPNsense: Interfaces &gt; CARP Settings &gt; Temporarily Disable CARP</span>
+<span class="c1"># 確認後: VP2440のCARPを再有効化 → VP2440がMASTERに戻ることを確認</span>
+</code></pre></div>
+<p>確認項目：
+- [ ] CARP切替後もインターネット通信継続（MAP-E維持）
+- [ ] pfsyncによる既存TCPセッションの維持
+- [ ] 全VLANの疎通確認
+- [ ] DMZサービスの継続稼働</p>
+<h3 id="phase-bc-vp6670master51">Phase B→C: VP6670をMASTERに昇格（5分、ダウンタイム1秒以内）<a class="headerlink" href="#phase-bc-vp6670master51" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># VP6670: advskew = 0  → MASTER</span>
+<span class="c1"># VP2440: advskew = 100 → BACKUP</span>
+<span class="c1"># 設定保存後、VP6670が自動的にMASTERに昇格</span>
+</code></pre></div>
+<p>または、VP2440のCARPを手動で一時無効化してVP6670をMASTERに昇格させ、
+advskew調整後にVP2440のCARPを再有効化する。</p>
+<h3 id="phase-c-1">Phase C後: 安定稼働確認（1週間観察）<a class="headerlink" href="#phase-c-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Grafana/Prometheusでの両FW監視</li>
+<li>週次でのCARPフェイルオーバーテスト実施</li>
+</ul>
+<hr />
+<h2 id="_10">結果<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h3 id="_11">得られるもの<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>FW冗長化</strong>: VP2440またはVP6670いずれかが故障しても1秒以内にフェイルオーバー</li>
+<li><strong>性能向上</strong>: 主系がN150（4コア）→ i7-1255U（10コア/12スレッド）に強化</li>
+<li>Suricata IDS/IPS・CAKE QoS処理の余裕が大幅増加</li>
+<li>将来の10Gbps WAN対応基盤</li>
+<li><strong>計画メンテナンスの容易化</strong>: 片系をオフラインにしてもサービス継続</li>
+<li><strong>段階的な出費</strong>: Phase A（$22）→ Phase B（+$369 + VP6670）→ Phase C（+$0）→ Phase D（+$11〜$44）と分散</li>
+<li><strong>将来の10GbE WAN</strong>: Phase B 設計で対応済み。ISP 変更時は WAN SW のケーブル 1 本差し替えのみ</li>
+</ul>
+<h3 id="_12">トレードオフ<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VP6670本体コスト</td>
+<td>$1,588（RAM 32GB・SSD・TPM込み）</td>
+</tr>
+<tr>
+<td>VP2440本体コスト</td>
+<td>$823（RAM 16GB・SSD・TPM込み）</td>
+</tr>
+<tr>
+<td>Phase B CRS305 × 3台</td>
+<td>$300（WAN SW + per-FW SW × 2）</td>
+</tr>
+<tr>
+<td>ケーブル合計（A〜D）</td>
+<td>約 $413〜$435</td>
+</tr>
+<tr>
+<td>VP6670はファン搭載</td>
+<td>オンデマンドファンのため通常無音だが、VP2440（完全ファンレス）より稼働音が出る可能性あり</td>
+</tr>
+<tr>
+<td>MAP-E CARP複雑性</td>
+<td><code>os-igc</code> プラグインのCARPサポートはコミュニティ報告ベース。Phase 0の実地テストで確認する。フォールバック: CARP未対応判明時はVP6670単独運用に切り替える</td>
+</tr>
+<tr>
+<td>VP2440 長期 MASTER 時</td>
+<td>N150 4コアでは 10Gbps + Suricata Inline がボトルネックになる可能性。Tap モード運用で緩和</td>
+</tr>
+<tr>
+<td>per-FW SW VLAN 設定</td>
+<td>SwOS での VLAN フィルタリング設定が必要（ADR-005 DMZ 分離の維持に必須）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adr">関連ADR<a class="headerlink" href="#adr" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../001-hardware-revision-2026-02/">ADR-001</a>: VP2440選定（本ADRで冗長化へ発展）</li>
+<li><a href="../004-remote-access-separation-2026-02/">ADR-004</a>: 外部アクセス責務分離（CARPフェイルオーバー後もTailscale継続）</li>
+<li><a href="../005-dmz-network-isolation-2026-02/">ADR-005</a>: DMZ物理分離（per-FW SW VLAN設定で原則継承。DMZ SW とコアSW は依然として直接非接続）</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

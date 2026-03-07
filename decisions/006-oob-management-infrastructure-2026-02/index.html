@@ -1,0 +1,1874 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+        <link rel="prev" href="../005-dmz-network-isolation-2026-02/">
+      
+      
+        <link rel="next" href="../007-oob-airgap-operation-2026-03/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>ADR-006 OOB管理基盤 - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-006-jetkvm-pxe-oob" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../.." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-006 OOB管理基盤
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../hardware/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../local-llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../003-backup-architecture-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 バックアップアーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../004-remote-access-separation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 外部アクセス責務分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../005-dmz-network-isolation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 DMZネットワーク物理分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 OOB管理基盤
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 OOB管理基盤
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOB管理端末
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oob-yamaha-swx2310-10g-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOBスイッチ: Yamaha SWX2310-10G × 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ip-kvm-jetkvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP-KVM: JetKVM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IP-KVM: JetKVM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jetkvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JetKVM 拡張品構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jetkvm_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JetKVM 調達先
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jetkvm_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JetKVM 代替候補（入手困難な場合）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pxe-raspberry-pi-516gbsc1113-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PXEサーバー: Raspberry Pi 5/16GB（SC1113）× 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#k3s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        k3sクラスタ構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU監視エクスポーター
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oob_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOBネットワークアドレス設計
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        得られるもの
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレードオフ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../007-oob-airgap-operation-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 OOBエアギャップ運用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../008-fw-ha-carp-vp6670-migration-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOB管理端末
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oob-yamaha-swx2310-10g-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOBスイッチ: Yamaha SWX2310-10G × 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ip-kvm-jetkvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP-KVM: JetKVM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IP-KVM: JetKVM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jetkvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JetKVM 拡張品構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jetkvm_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JetKVM 調達先
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jetkvm_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JetKVM 代替候補（入手困難な場合）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pxe-raspberry-pi-516gbsc1113-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PXEサーバー: Raspberry Pi 5/16GB（SC1113）× 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#k3s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        k3sクラスタ構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU監視エクスポーター
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oob_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOBネットワークアドレス設計
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        得られるもの
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレードオフ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="adr-006-jetkvm-pxe-oob">ADR-006: アウトオブバンド管理基盤 — JetKVM / PXE / OOBスイッチ構成<a class="headerlink" href="#adr-006-jetkvm-pxe-oob" title="Permanent link">&para;</a></h1>
+<h2 id="_1">ステータス<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>承認</p>
+<h2 id="_2">コンテキスト<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Proxmoxクラスタの障害・侵害時でも管理操作を継続できるアウトオブバンド（OOB）経路が必要。
+以下の課題に対応する設計を決定する。</p>
+<p><strong>課題1: BMCの統一管理</strong>
+各ノードのベンダー固有BMC（HP iLO、Dell iDRACなど）は以下の問題を抱える。</p>
+<ul>
+<li>ノードごとにファームウェア更新・CVE対応が異なる</li>
+<li>iLOなど一部は商用ライセンスが必要</li>
+<li>攻撃面が広く、Proxmoxと独立して侵害されるリスクがある</li>
+</ul>
+<p><strong>課題2: OOBスイッチのベンダー多様性</strong>
+コアネットワークはMikroTik（RouterOS）で統一しているが、
+OOBスイッチに同じMikroTikを使うと以下のリスクがある。</p>
+<ul>
+<li>Proxmoxクラスタ侵害後、攻撃者がMikroTikのCVE・設定慣例の知識を流用して
+  OOBスイッチまで横展開できる可能性がある</li>
+<li>SwOSはRouterOSとは別実装だが、同一ベンダーエコシステムへの依存は排除できない</li>
+</ul>
+<p><strong>課題3: PXEによる自動復旧</strong>
+手動でISOインストールメディアを差し込む運用は障害対応を遅延させる。
+常時稼働するPXEサーバーがあれば、JetKVMとの組み合わせでリモートから
+完全な再インストール・再構成が可能になる。</p>
+<p><strong>課題4: GPU監視の統一</strong>
+PVE-GPU（HP Z8 G4）はNVIDIA GPU（RTX 3080 Ti + 3070 + 2080 Ti）を搭載。
+将来的にAMD GPUを追加した場合、エクスポーターが異なる。
+一貫した監視設計が必要。</p>
+<p><strong>課題5: k3sクラスタのメモリ上限</strong>
+Forgejo + forgejo-runner + 将来的なワークロード増加を想定すると、
+Raspberry Pi 4（最大8GB）ではメモリが不足する可能性がある。</p>
+<h2 id="_3">決定<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="oob">OOB管理端末<a class="headerlink" href="#oob" title="Permanent link">&para;</a></h3>
+<p>Lab・DMZ各ゾーンに物理管理端末を1台ずつ配置する。</p>
+<table>
+<thead>
+<tr>
+<th>ゾーン</th>
+<th>役割</th>
+<th>接続</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lab OOB</td>
+<td>Lab OOBスイッチ経由で全PVEノードに到達</td>
+<td>VLAN 91</td>
+</tr>
+<tr>
+<td>DMZ OOB</td>
+<td>DMZ OOBスイッチ経由でDMZノードに到達</td>
+<td>VLAN 101</td>
+</tr>
+</tbody>
+</table>
+<p>管理端末間にKVMスイッチは設置しない。
+物理的に分離されたゾーンの管理端末を共用するとゾーン間の経路が生まれるため。</p>
+<h3 id="oob-yamaha-swx2310-10g-2">OOBスイッチ: Yamaha SWX2310-10G × 2<a class="headerlink" href="#oob-yamaha-swx2310-10g-2" title="Permanent link">&para;</a></h3>
+<p>コアネットワーク（MikroTik RouterOS）と<strong>異なるベンダー</strong>を採用する。</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>決定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>製品</td>
+<td>Yamaha SWX2310-10G</td>
+</tr>
+<tr>
+<td>台数</td>
+<td>Lab × 1、DMZ × 1</td>
+</tr>
+<tr>
+<td>ポート構成</td>
+<td>8× GbE + 2× SFP+ (10G)</td>
+</tr>
+<tr>
+<td>運用モード</td>
+<td>L2スイッチング専用、インターネット非接続</td>
+</tr>
+<tr>
+<td>採用理由</td>
+<td>国産ベンダー、RouterOSとエコシステムが完全に異なる、現行生産品のため入手性が高い、中古SWX2200-8Gと価格差が小さい、10G SFP+アップリンク搭載</td>
+</tr>
+</tbody>
+</table>
+<p>MikroTik RouterOSの知識・CVEがOOBスイッチに流用不可となり、
+Proxmoxクラスタからの横展開リスクを構造的に排除する。</p>
+<h3 id="ip-kvm-jetkvm">IP-KVM: JetKVM<a class="headerlink" href="#ip-kvm-jetkvm" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ゾーン</th>
+<th>台数</th>
+<th>対象ノード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lab</td>
+<td>4台</td>
+<td>PVE-1, PVE-2, PVE-3, PVE-GPU</td>
+</tr>
+<tr>
+<td>DMZ</td>
+<td>1台〜（拡張可）</td>
+<td>PVE-DMZ-1（+ 将来 PVE-DMZ-2）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ベンダーBMC（HP iLO等）は<strong>無効化</strong>する。JetKVMに一本化することで管理面を統一。</li>
+<li>JetKVMはHTTPS経由でIP-KVMアクセスを提供。PXEブートトリガーにも対応。</li>
+</ul>
+<h4 id="jetkvm">JetKVM 拡張品構成<a class="headerlink" href="#jetkvm" title="Permanent link">&para;</a></h4>
+<p>電源制御用拡張品はノードの電源方式によって使い分ける。
+JetKVM本体のRJ-12ポートに接続し、1台につき1個を装着する。</p>
+<table>
+<thead>
+<tr>
+<th>ノード</th>
+<th>電源方式</th>
+<th>必要な拡張品</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-1</td>
+<td>ATX</td>
+<td>ATX Extension Board</td>
+</tr>
+<tr>
+<td>PVE-2</td>
+<td>ATX</td>
+<td>ATX Extension Board</td>
+</tr>
+<tr>
+<td>PVE-3（M75q Gen5）</td>
+<td>DC barrel 90W</td>
+<td>DC Power Control Extension</td>
+</tr>
+<tr>
+<td>PVE-GPU（HP Z8 G4）</td>
+<td>ATX</td>
+<td>ATX Extension Board</td>
+</tr>
+<tr>
+<td>PVE-DMZ-1（M90q Gen5）</td>
+<td>DC barrel 135W</td>
+<td>DC Power Control Extension</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ATX Extension Board: 3台 / DC Power Control Extension: 2台</strong></p>
+<p><strong>Serial Console Extension は採用しない。</strong>
+JetKVM本体のHDMIキャプチャでBIOS/UEFIレベルのアクセスを代替できる。
+M75q Gen5・M90q Gen5はRS-232ポートを持たないため無効。
+将来OPNsense（Protectli VP2440）へのJetKVM追加を検討する際に再評価する。</p>
+<p>DC Power Control Extension の主要仕様:
+- 対応電圧: DC 12〜20V（5.5×2.5mm バレルジャック、5.5×2.1mm アダプター同梱）
+- MCU: Raspberry Pi RP2040、電力監視: INA219センサー（電圧・電流・電力計測）
+- JetKVM本体への給電: RJ-12経由で同時給電可能（USB-C電源ケーブルが不要になる）</p>
+<h4 id="jetkvm_1">JetKVM 調達先<a class="headerlink" href="#jetkvm_1" title="Permanent link">&para;</a></h4>
+<p>jetkvm.com の "Buy from Reseller" に掲載されている公式リセラー。
+Mouser・DigiKeyには未取扱い。Amazon経由の第三者出品（BitPC等）は保証範囲が不明確なため非推奨。
+日本国内のグレー市場品（¥15,000/台）は正規品の保証がないため非推奨。</p>
+<table>
+<thead>
+<tr>
+<th>リセラー</th>
+<th>拠点</th>
+<th>本体価格</th>
+<th>拡張品価格</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>iKOOLCORE</strong></td>
+<td>中国（Shenzhen）</td>
+<td>$89.99</td>
+<td>要確認</td>
+<td>全4種扱い、バルク対応、1年保証</td>
+</tr>
+<tr>
+<td><strong>WisdPi</strong></td>
+<td>中国（Shenzhen）</td>
+<td>$89.00</td>
+<td>要確認</td>
+<td>全4種扱い、PoE Splitterも取扱い</td>
+</tr>
+<tr>
+<td><strong>Welectron</strong></td>
+<td>ドイツ（EU）</td>
+<td>€99.00</td>
+<td>€24.90/個</td>
+<td>Approved RPi Reseller兼務、EU向け</td>
+</tr>
+</tbody>
+</table>
+<p><strong>推奨: iKOOLCORE</strong>
+本体・ATX Extension Board・DC Power Control Extensionを一括購入可能。
+1年保証付き（保証後も低コスト修理対応）。Shenzhen発送のため日本へのリードタイムが短い。</p>
+<h4 id="jetkvm_2">JetKVM 代替候補（入手困難な場合）<a class="headerlink" href="#jetkvm_2" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>製品</th>
+<th>価格目安</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NanoKVM Full（Sipeed）</td>
+<td>≈$40（¥6,000）/ AliExpress</td>
+<td>RISC-V、安価、機能はJetKVMと同等</td>
+</tr>
+<tr>
+<td>DIY PiKVM（Pi Zero 2W + HAT）</td>
+<td>≈$50-60（¥8,000）/ 台</td>
+<td>OSS実績豊富、Pi Zero 2W既所有分を活用可</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pxe-raspberry-pi-516gbsc1113-2">PXEサーバー: Raspberry Pi 5/16GB（SC1113）× 2<a class="headerlink" href="#pxe-raspberry-pi-516gbsc1113-2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ゾーン</th>
+<th>ホスト</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lab OOB (VLAN 91)</td>
+<td>pxe-lab</td>
+<td>PXEブート、netboot.xyz、TFTP/DHCP</td>
+</tr>
+<tr>
+<td>DMZ OOB (VLAN 101)</td>
+<td>pxe-dmz</td>
+<td>PXEブート、netboot.xyz、TFTP/DHCP</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Pi Zero 2W（既所有）から <strong>Pi 5/16GB（SC1113）</strong> に変更。
+  将来的なメモリ要件（k3sクラスタワークロード増加）に対応するため。</li>
+<li>JetKVMとPXEを組み合わせることで、現地作業ゼロのフルリモート再インストールを実現。</li>
+</ul>
+<h3 id="k3s">k3sクラスタ構成<a class="headerlink" href="#k3s" title="Permanent link">&para;</a></h3>
+<p>Forgejo（Gitサーバー）とforgejo-runnerを3ノードHAクラスタで運用する。</p>
+<table>
+<thead>
+<tr>
+<th>ノード</th>
+<th>スペック</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pi-1</td>
+<td>Pi 5/16GB</td>
+<td>k3s CP + worker、forgejo-runner</td>
+</tr>
+<tr>
+<td>pi-2</td>
+<td>Pi 5/16GB</td>
+<td>k3s CP + worker、forgejo-runner</td>
+</tr>
+<tr>
+<td>k3s-vm</td>
+<td>Proxmox VM（Lab VLAN 200）</td>
+<td>k3s CP + worker、forgejo-runner</td>
+</tr>
+</tbody>
+</table>
+<p>3ノードでetcd quorumを維持。Proxmox VM障害時も2台のPiでクラスタ継続。</p>
+<h3 id="gpu">GPU監視エクスポーター<a class="headerlink" href="#gpu" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>GPU製造元</th>
+<th>エクスポーター</th>
+<th>取得方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA</td>
+<td><strong>dcgm_exporter</strong></td>
+<td>NVIDIA DCGM経由、温度・利用率・ECC・クロック等を網羅</td>
+</tr>
+<tr>
+<td>AMD</td>
+<td><strong>node_exporter</strong></td>
+<td>hwmon / amdgpuカーネルドライバー経由</td>
+</tr>
+</tbody>
+</table>
+<p>HP Z8 G4（RTX 3080 Ti + 3070 + 2080 Ti）はdcgm_exporterを採用。
+AMD GPUを将来追加した場合はnode_exporterのhwmonコレクターで対応する。</p>
+<h3 id="oob_1">OOBネットワークアドレス設計<a class="headerlink" href="#oob_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>VLAN</th>
+<th>名前</th>
+<th>サブネット</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>91</td>
+<td>Lab-OOB</td>
+<td>10.0.91.0/24</td>
+<td>Labゾーン帯域外管理</td>
+</tr>
+<tr>
+<td>101</td>
+<td>DMZ-OOB</td>
+<td>10.0.101.0/24</td>
+<td>DMZゾーン帯域外管理</td>
+</tr>
+</tbody>
+</table>
+<p>Tailscale（VLAN 90 Mgmt）はコントロールプレーン（ADR-004参照）。
+OOB VLANは物理KVMアクセス・PXE・JetKVM専用。相互に分離する。</p>
+<h2 id="_4">結果<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">得られるもの<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>障害耐性</strong>: Proxmoxクラスタが全滅しても、OOB端末 + JetKVM + PXEで完全リモート復旧が可能</li>
+<li><strong>ベンダー多様性</strong>: OOBスイッチをYamahaにすることで、MikroTik侵害がOOBに波及しない</li>
+<li><strong>BMC一本化</strong>: JetKVMに統一することでHP iLO等のBMC固有CVEリスクを排除</li>
+<li><strong>自動復旧</strong>: PXE + netboot.xyzにより、ISOメディア作業ゼロでOSの再インストールが可能</li>
+<li><strong>監視網羅</strong>: dcgm_exporterによりNVIDIA GPUのECC・温度・スロットリング等を詳細監視</li>
+</ul>
+<h3 id="_6">トレードオフ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>OOBスイッチをYamahaに変更することで、MikroTikとの運用知識が分散する
+  → OOBスイッチはL2スイッチング専用（設定が単純）なので運用負担は最小限</li>
+<li>Pi 5/16GB × 2のコスト増（Pi Zero 2Wと比較して）
+  → k3sクラスタのメモリ拡張コストと合わせて一回で解決できる</li>
+<li>JetKVM本体5台 + 拡張品（ATX Extension Board × 3、DC Power Control Extension × 2）の初期コスト
+  → HP iLOのライセンス費用・管理工数と比較して長期的にコスト効率が高い
+  → 公式リセラー（iKOOLCORE等）経由なら国内グレー市場より安価で正規品保証あり
+  → 入手困難な場合はNanoKVM Full（≈$40）またはDIY PiKVMで代替可能</li>
+</ul>
+<h3 id="adr">関連ADR<a class="headerlink" href="#adr" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../001-hardware-revision-2026-02/">ADR-001</a>: ハードウェア選定（PVEノード構成）</li>
+<li><a href="../003-backup-architecture-2026-02/">ADR-003</a>: バックアップノードのOOB隔離設計</li>
+<li><a href="../004-remote-access-separation-2026-02/">ADR-004</a>: Tailscaleをコントロールプレーンとして使用</li>
+<li><a href="../005-dmz-network-isolation-2026-02/">ADR-005</a>: DMZ物理分離（DMZ OOBスイッチと連携）</li>
+<li><a href="../007-oob-airgap-operation-2026-03/">ADR-007</a>: <strong>本ADRを一部変更</strong>。OOB管理端末のアクセス方式をSSH→物理アクセス専用に変更。VLAN 92（OOB-Update）を新設。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
