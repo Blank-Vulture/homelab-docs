@@ -1,0 +1,2585 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+        <link rel="prev" href="../vlans/">
+      
+      
+        <link rel="next" href="../local-llm/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ハードウェア - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href=".." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ハードウェア
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../current/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  現在の環境
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../decisions/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../current/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    現在の環境
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    現在の環境
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../current/proxmox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proxmox 構成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../current/cloudflare/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloudflare 構成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../current/integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    連携フロー
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ネットワーク機器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ネットワーク機器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 からの変更点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        セキュリティ注意事項
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サーバー機器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="サーバー機器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vlan200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        プライベートラボ (VLAN200)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpupc-vlan200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU専用PC (VLAN200)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dmz-vlan100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMZ (VLAN100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oob-vlan91101" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOB管理基盤 (VLAN91/101)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#k3s-forgejo-ha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        k3sクラスタ (Forgejo HA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vlan240" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        バックアップノード (VLAN240)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コントロールプレーン選定基準
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        クライアント機器
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NIC構成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NIC構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nicphase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NIC選定方針（Phase 2 見直し）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入機器リスト
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="購入機器リスト">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2026-03-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入ルート調査結果（2026-03-08）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="購入ルート調査結果（2026-03-08）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mikrotik" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MikroTik スイッチ: 購入先比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getic 購入コスト詳細
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2026-03-08_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推奨購入戦略（2026-03-08更新）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dac-fscom-japan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DAC ケーブル: FS.com Japan が最安
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        価格についての補足
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../decisions/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/003-backup-architecture-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 バックアップアーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/004-remote-access-separation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 外部アクセス責務分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/005-dmz-network-isolation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 DMZネットワーク物理分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/006-oob-management-infrastructure-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 OOB管理基盤
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/007-oob-airgap-operation-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 OOBエアギャップ運用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/008-fw-ha-carp-vp6670-migration-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/009-tailscale-unified-access-cloudflare-dns-only-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009 外部アクセス統合（Tailscale一本化）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ネットワーク機器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ネットワーク機器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 からの変更点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        セキュリティ注意事項
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サーバー機器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="サーバー機器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vlan200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        プライベートラボ (VLAN200)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpupc-vlan200" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU専用PC (VLAN200)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dmz-vlan100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMZ (VLAN100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oob-vlan91101" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OOB管理基盤 (VLAN91/101)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#k3s-forgejo-ha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        k3sクラスタ (Forgejo HA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vlan240" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        バックアップノード (VLAN240)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コントロールプレーン選定基準
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        クライアント機器
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NIC構成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NIC構成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nicphase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NIC選定方針（Phase 2 見直し）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入機器リスト
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="購入機器リスト">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2026-03-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        購入ルート調査結果（2026-03-08）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="購入ルート調査結果（2026-03-08）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mikrotik" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MikroTik スイッチ: 購入先比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getic 購入コスト詳細
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2026-03-08_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推奨購入戦略（2026-03-08更新）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dac-fscom-japan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DAC ケーブル: FS.com Japan が最安
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        価格についての補足
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">ハードウェア一覧<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>最終更新: 2026-03-07（ADR-008承認: VP6670 CARP MASTER追加・WAN SW・per-FW SW×2追加）</p>
+</blockquote>
+<h2 id="_2">ネットワーク機器<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>機種</th>
+<th>仕様</th>
+<th>設置場所</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FW — CARP MASTER</td>
+<td>Protectli VP6670</td>
+<td>i7-1255U 10C/12T, 2x 10G SFP+ (X710), 4x 2.5GbE (I226), coreboot</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>FW — CARP BACKUP</td>
+<td>Protectli VP2440</td>
+<td>N150 4C/4T, 2x 10G SFP+ (X710-BM2), 2x 2.5GbE (I226-V), coreboot</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>WAN SW</td>
+<td>MikroTik CRS305-1G-4S+</td>
+<td>10Gbps x4 SFP+, SwOSモード, ONU〜両FW WAN分配</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>per-VP6670-SW</td>
+<td>MikroTik CRS305-1G-4S+</td>
+<td>10Gbps x4 SFP+, SwOSモード, VP6670 LAN/DMZ分配</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>per-VP2440-SW</td>
+<td>MikroTik CRS305-1G-4S+</td>
+<td>10Gbps x4 SFP+, SwOSモード, VP2440 LAN/DMZ分配</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>コアスイッチ</td>
+<td>MikroTik CRS305-1G-4S+</td>
+<td>10Gbps x4 SFP+</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>アクセススイッチ</td>
+<td>MikroTik CRS328-24P-4S+</td>
+<td>1Gbps x24 PoE, 10G x4</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>ラボスイッチ</td>
+<td>MikroTik CRS309-1G-8S+</td>
+<td>10Gbps x8 SFP+</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>DMZスイッチ</td>
+<td>MikroTik CRS305-1G-4S+</td>
+<td>10Gbps x4 SFP+, SwOSモード</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>ゲーミングスイッチ</td>
+<td>Planex FX2G-05EM2</td>
+<td>5x 2.5GbE, アンマネージド</td>
+<td>デスク横</td>
+</tr>
+<tr>
+<td>OOBスイッチ (Lab)</td>
+<td>Yamaha SWX2310-10G</td>
+<td>8x 1GbE PoE+, 2x 10G SFP+, L2専用, インターネット非接続</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>OOBスイッチ (DMZ)</td>
+<td>Yamaha SWX2310-10G</td>
+<td>8x 1GbE PoE+, 2x 10G SFP+, L2専用, インターネット非接続</td>
+<td>ラック</td>
+</tr>
+<tr>
+<td>WiFi AP (家族用)</td>
+<td>Ubiquiti U7 Pro</td>
+<td>WiFi 7 (802.11be), PoE給電</td>
+<td>天井/壁</td>
+</tr>
+<tr>
+<td>WiFi AP (父用)</td>
+<td>ASUS GT-AX11000</td>
+<td>WiFi 6, AIセキュリティ</td>
+<td>父の部屋</td>
+</tr>
+</tbody>
+</table>
+<h3 id="phase-1">Phase 1 からの変更点<a class="headerlink" href="#phase-1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>変更</th>
+<th>旧</th>
+<th>新</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FW</td>
+<td>N100 Mini PC (4x2.5G)</td>
+<td>Protectli VP2440 (2x2.5G + 2x10G SFP+)</td>
+<td>10G SFP+対応、将来の10Gbps WAN、corebootによるセキュリティ</td>
+</tr>
+<tr>
+<td>FW冗長化</td>
+<td>VP2440 単独</td>
+<td>VP6670 (MASTER) + VP2440 (BACKUP) CARP ペア</td>
+<td>FW単一障害点の解消。1秒以内フェイルオーバー。i7-1255U によるSuricata/10G WAN性能強化（ADR-008承認）</td>
+</tr>
+<tr>
+<td>コア/ラボSW</td>
+<td>役割そのまま</td>
+<td>CRS305=コア, CRS305=DMZ, CRS309=ラボ</td>
+<td>コアは3接続（FW,Access,Lab）+ 1空き。DMZはFW直結で物理分離（ADR-005）。ラボは拡張性重視で8ポート維持</td>
+</tr>
+<tr>
+<td>WAN SW・per-FW SW</td>
+<td>なし</td>
+<td>CRS305 SwOS × 3台（WAN SW 1 + per-FW SW 2）</td>
+<td>CARP HA構成でFW 2台が同一WAN/LAN/DMZスイッチを共有する分配SW構成。10GbE WAN対応済み（ADR-008）</td>
+</tr>
+<tr>
+<td>ゲーミングSW</td>
+<td>未定</td>
+<td>Planex FX2G-05EM2</td>
+<td>アンマネージドで攻撃面ゼロ、低遅延、コスパ最優秀</td>
+</tr>
+<tr>
+<td>WiFi AP</td>
+<td>MikroTik cAP ax (WiFi 6)</td>
+<td>Ubiquiti U7 Pro (WiFi 7)</td>
+<td>WiFi 7対応、MikroTikに天井AP WiFi 7モデルなし</td>
+</tr>
+<tr>
+<td>10G NIC</td>
+<td>Mellanox ConnectX-3 x3</td>
+<td>CX-6 Lx x1 (CP) + 82599ES x3 (ワーカー/予備) + X520-DA2 x1</td>
+<td>CX-4 Lx新品入手困難、CPのみCX-6 Lxで25GbE対応、ワーカーは82599ESでコスト最適化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_3">セキュリティ注意事項<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ASUS GT-AX11000</strong>: AiCloud機能を即座に無効化すること（CVE深刻度: Critical、Operation WrtHug関連）</li>
+<li><strong>MikroTik RouterOS</strong>: v7.20.8 (Long-term) 以上に必ず更新（2025年にCVSS 9.4級の脆弱性7件）</li>
+<li><strong>ConnectX-3は使用禁止</strong>: PVE 9 (kernel 6.14) で動作しない報告あり、EOL、セキュアFW更新なし</li>
+<li><strong>82599ES NVMファームウェア更新禁止</strong>: サードパーティ製のため更新で文鎮化リスク。出荷時のまま運用すること</li>
+</ul>
+<h2 id="_4">サーバー機器<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="vlan200">プライベートラボ (VLAN200)<a class="headerlink" href="#vlan200" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>機種</th>
+<th>仕様</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-1</td>
+<td>旧ゲーミングPC</td>
+<td>GPU搭載, 10Gtek 82599ES (2x SFP+)</td>
+<td>VM/コンテナ, Ceph OSD</td>
+</tr>
+<tr>
+<td>PVE-2</td>
+<td>旧ゲーミングPC</td>
+<td>GPU搭載, 10Gtek 82599ES (2x SFP+)</td>
+<td>VM/コンテナ, Ceph OSD</td>
+</tr>
+<tr>
+<td>PVE-3</td>
+<td>Lenovo ThinkCentre M75q Tiny Gen 5</td>
+<td>Ryzen 7 PRO 8700GE, 64GB DDR5, NVIDIA CX-6 Lx (2x SFP28)</td>
+<td>Lab CP, Ceph Monitor, 監視</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gpupc-vlan200">GPU専用PC (VLAN200)<a class="headerlink" href="#gpupc-vlan200" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>機種</th>
+<th>仕様</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-GPU</td>
+<td>HP Z8 G4 Workstation (中古BTO)</td>
+<td>Xeon Gold 6134 ×2 (16C/32T), 64GB DDR4 ECC, NVMe 1.25TB</td>
+<td>ローカルLLM推論, GPU計算</td>
+</tr>
+</tbody>
+</table>
+<p>搭載GPU:</p>
+<table>
+<thead>
+<tr>
+<th>GPU</th>
+<th>VRAM</th>
+<th>アーキテクチャ</th>
+<th>出所</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTX 3080 Ti × 1</td>
+<td>12GB</td>
+<td>Ampere (SM 8.6)</td>
+<td>PVE-1から移設</td>
+</tr>
+<tr>
+<td>RTX 3070 × 1</td>
+<td>8GB</td>
+<td>Ampere (SM 8.6)</td>
+<td>PVE-2から移設</td>
+</tr>
+<tr>
+<td>RTX 2080 Ti (GALAX) × 1</td>
+<td>11GB</td>
+<td>Turing (SM 7.5)</td>
+<td>遊休品</td>
+</tr>
+<tr>
+<td><strong>合計VRAM</strong></td>
+<td><strong>31GB</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>詳細: <a href="../local-llm/">ローカルLLM推論環境</a></p>
+<h3 id="dmz-vlan100">DMZ (VLAN100)<a class="headerlink" href="#dmz-vlan100" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>機種</th>
+<th>仕様</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-DMZ-1</td>
+<td>Lenovo ThinkCentre M90q Tiny Gen 5</td>
+<td>i5-14500T, 64GB DDR5, FIPS TPM, vPro</td>
+<td>Validator, 外部サービス</td>
+</tr>
+<tr>
+<td>PVE-DMZ-2</td>
+<td>将来追加</td>
+<td>-</td>
+<td>拡張用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="oob-vlan91101">OOB管理基盤 (VLAN91/101)<a class="headerlink" href="#oob-vlan91101" title="Permanent link">&para;</a></h3>
+<p>設計根拠: <a href="../decisions/006-oob-management-infrastructure-2026-02/">ADR-006</a></p>
+<p><strong>IP-KVM (JetKVM)</strong></p>
+<table>
+<thead>
+<tr>
+<th>ノード</th>
+<th>電源拡張品</th>
+<th>VLAN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVE-1</td>
+<td>ATX Extension Board</td>
+<td>91 (Lab-OOB)</td>
+</tr>
+<tr>
+<td>PVE-2</td>
+<td>ATX Extension Board</td>
+<td>91 (Lab-OOB)</td>
+</tr>
+<tr>
+<td>PVE-3 (M75q Gen5)</td>
+<td>DC Power Control Extension</td>
+<td>91 (Lab-OOB)</td>
+</tr>
+<tr>
+<td>PVE-GPU (HP Z8 G4)</td>
+<td>ATX Extension Board</td>
+<td>91 (Lab-OOB)</td>
+</tr>
+<tr>
+<td>PVE-DMZ-1 (M90q Gen5)</td>
+<td>DC Power Control Extension</td>
+<td>101 (DMZ-OOB)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ベンダーBMC（HP iLO等）は<strong>無効化</strong>。JetKVMに一本化。</li>
+<li>調達先: iKOOLCORE（推奨）— 本体・拡張品を一括購入可能、1年保証</li>
+</ul>
+<p><strong>PXEサーバー</strong></p>
+<table>
+<thead>
+<tr>
+<th>ホスト</th>
+<th>機種</th>
+<th>VLAN</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pxe-lab</td>
+<td>Raspberry Pi 5/16GB (SC1113)</td>
+<td>91 (Lab-OOB)</td>
+<td>PXE、netboot.xyz、TFTP/DHCP</td>
+</tr>
+<tr>
+<td>pxe-dmz</td>
+<td>Raspberry Pi 5/16GB (SC1113)</td>
+<td>101 (DMZ-OOB)</td>
+<td>PXE、netboot.xyz、TFTP/DHCP</td>
+</tr>
+</tbody>
+</table>
+<h3 id="k3s-forgejo-ha">k3sクラスタ (Forgejo HA)<a class="headerlink" href="#k3s-forgejo-ha" title="Permanent link">&para;</a></h3>
+<p>設計根拠: <a href="../decisions/006-oob-management-infrastructure-2026-02/">ADR-006</a></p>
+<table>
+<thead>
+<tr>
+<th>ノード</th>
+<th>機種</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pi-1</td>
+<td>Raspberry Pi 5/16GB</td>
+<td>k3s CP + worker、forgejo-runner</td>
+</tr>
+<tr>
+<td>pi-2</td>
+<td>Raspberry Pi 5/16GB</td>
+<td>k3s CP + worker、forgejo-runner</td>
+</tr>
+<tr>
+<td>k3s-vm</td>
+<td>Proxmox VM (Lab VLAN 200)</td>
+<td>k3s CP + worker、forgejo-runner</td>
+</tr>
+</tbody>
+</table>
+<p>3ノードでetcd quorumを維持。Proxmox VM障害時も2台のPiでクラスタ継続。</p>
+<h3 id="vlan240">バックアップノード (VLAN240)<a class="headerlink" href="#vlan240" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>機種</th>
+<th>仕様</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>backup-node</td>
+<td>Raspberry Pi 5 (4GB) 推奨</td>
+<td>ARM64, USB SSD, 1GbE</td>
+<td>PULL型バックアップ、Gitミラー</td>
+</tr>
+</tbody>
+</table>
+<p>選定基準:
+- <strong>ARM64</strong>: x86 PVEノードとのCPUアーキテクチャ多様性（共通脆弱性の同時影響を回避）
+- <strong>異なるカーネル</strong>: Debian Stable（PVEカーネルとは異なる系統）
+- <strong>独立ストレージ</strong>: USB SSD（Cephに依存しない）
+- <strong>省電力</strong>: ~5W常時稼働（年間電気代 ~¥1,200）
+- <strong>低コスト</strong>: 本体+ケース+SSD ~¥18,000</p>
+<p>代替: 中古ミニPC (x86) ~¥10,000-15,000、手持ちの古いPC/ノートPC ¥0</p>
+<h3 id="_5">コントロールプレーン選定基準<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>新品のみ</strong>: 24/365稼働前提のため、中古品のSSD摩耗・グリス劣化リスクを排除</li>
+<li><strong>高耐久</strong>: MILスペックテスト済み、3年オンサイト保証</li>
+<li><strong>省電力</strong>: TDP 35W、アイドル ~8-15W</li>
+<li><strong>DMZにはFIPS TPM</strong>: 外部公開セグメントのセキュリティ要件</li>
+</ul>
+<h2 id="_6">クライアント機器<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">非公開</p>
+<p>個人情報保護のため、このセクションは非公開です。</p>
+</div>
+<h2 id="nic">NIC構成<a class="headerlink" href="#nic" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>NIC</th>
+<th>搭載先</th>
+<th>ドライバ</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA ConnectX-6 Lx MCX631102AN-ADAT (10/25G SFP28)</td>
+<td>PVE-3 (Lab CP)</td>
+<td><code>mlx5_core</code></td>
+<td>VLAN trunk, Ceph Monitor, 将来25GbE移行起点</td>
+</tr>
+<tr>
+<td>10Gtek 82599ES X520互換 (10G SFP+ dual)</td>
+<td>PVE-1</td>
+<td><code>ixgbe</code></td>
+<td>VLAN trunk (Port1), Ceph OSD (Port2)</td>
+</tr>
+<tr>
+<td>10Gtek 82599ES X520互換 (10G SFP+ dual)</td>
+<td>PVE-2</td>
+<td><code>ixgbe</code></td>
+<td>VLAN trunk (Port1), Ceph OSD (Port2)</td>
+</tr>
+<tr>
+<td>10Gtek 82599ES X520互換 (10G SFP+ dual)</td>
+<td>予備</td>
+<td><code>ixgbe</code></td>
+<td>PVE-1/PVE-2 故障時の即時交換用</td>
+</tr>
+<tr>
+<td>Intel X520-DA2 (10G SFP+ dual)</td>
+<td>PVE-1 or PVE-2</td>
+<td><code>ixgbe</code></td>
+<td>Windows 11 GPU-PT VM用 (Mellanoxドライバ非互換回避)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nicphase-2">NIC選定方針（Phase 2 見直し）<a class="headerlink" href="#nicphase-2" title="Permanent link">&para;</a></h3>
+<p><strong>コントロールプレーン (PVE-3): NVIDIA ConnectX-6 Lx</strong></p>
+<ul>
+<li>ConnectX-4 Lxの新品が入手困難（2021年EOL、2022年最終出荷）</li>
+<li>後継CX-6 Lxは同一<code>mlx5_core</code>ドライバでProxmox完全互換</li>
+<li>SFP28はSFP+後方互換、将来25GbE移行がケーブル交換のみで可能</li>
+<li>PCIe 4.0 x8、消費電力 ~11W</li>
+</ul>
+<p><strong>ワーカーノード (PVE-1/PVE-2): 10Gtek 82599ES (Intel X520互換)</strong></p>
+<ul>
+<li><code>ixgbe</code>は最も枯れた10GbEドライバ、10年以上の実績</li>
+<li>SFP+ネイティブでMikroTik CRS309にDAC直結</li>
+<li>¥9,999/枚で予備含め3枚購入してもCX-6 Lx 1枚以下</li>
+<li>PCIe 2.0 x8だが10GbE×2=20Gbpsに対し帯域40Gbpsで十分</li>
+<li>NVMファームウェア更新は非推奨（サードパーティ製のため更新で文鎮化リスク）</li>
+</ul>
+<p><strong>ハイブリッド構成の利点</strong></p>
+<ul>
+<li>全CX-6 Lx構成（~20万円）と比べ約12万円の節約</li>
+<li>CPにCX-6 Lxを配置することで25GbE移行の起点を確保</li>
+<li>82599ESは¥1万円/枚のため故障時も即交換可能（予備1枚常備）</li>
+</ul>
+<h2 id="_7">購入機器リスト<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>価格調査実施: 2026-03-08（Amazon.co.jp / Baltic Networks / Streakwave / FS.com Japan / Getic 実売確認）</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>カテゴリ</th>
+<th>機器</th>
+<th>実売価格</th>
+<th>購入先推奨</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FW — CARP MASTER</td>
+<td>Protectli VP6670 (RAM 32GB + NVMe + TPM)</td>
+<td>~23.5万円 ($1,588)</td>
+<td>Protectli 公式</td>
+</tr>
+<tr>
+<td>FW — CARP BACKUP</td>
+<td>Protectli VP2440 (RAM 16GB + NVMe + TPM)</td>
+<td>~12万円 ($823)</td>
+<td>Protectli 公式</td>
+</tr>
+<tr>
+<td>WAN SW</td>
+<td>MikroTik CRS305-1G-4S+ (SwOS)</td>
+<td>$119.15 → ¥17,873</td>
+<td><strong>Getic</strong>（MikroTik正規代理店・在庫あり）</td>
+</tr>
+<tr>
+<td>per-FW SW × 2</td>
+<td>MikroTik CRS305-1G-4S+ (SwOS) × 2</td>
+<td>$238.30 → ¥35,745</td>
+<td><strong>Getic</strong></td>
+</tr>
+<tr>
+<td>コアスイッチ</td>
+<td>MikroTik CRS305-1G-4S+</td>
+<td>$119.15 → ¥17,873</td>
+<td><strong>Getic</strong></td>
+</tr>
+<tr>
+<td>アクセススイッチ</td>
+<td>MikroTik CRS328-24P-4S+RM</td>
+<td>$434.22 → ¥65,133</td>
+<td><strong>Getic</strong>（在庫あり、Amazon¥96,592より¥31,000安）</td>
+</tr>
+<tr>
+<td>ラボスイッチ</td>
+<td>MikroTik CRS309-1G-8S+</td>
+<td>$217.68 → ¥32,652</td>
+<td><strong>Getic</strong>（在庫あり、Baltic $269より$51安）</td>
+</tr>
+<tr>
+<td>DMZスイッチ</td>
+<td>MikroTik CRS305-1G-4S+ (SwOS)</td>
+<td>$119.15 → ¥17,873</td>
+<td><strong>Getic</strong></td>
+</tr>
+<tr>
+<td>OOBスイッチ × 2</td>
+<td>Yamaha SWX2310-10G × 2</td>
+<td>~3万円</td>
+<td>Amazon.co.jp / ヤマハ代理店</td>
+</tr>
+<tr>
+<td>IP-KVM × 5</td>
+<td>JetKVM 本体 (5台) + ATX Ext × 3 + DC Power Ext × 2</td>
+<td>~6.5万円</td>
+<td>iKOOLCORE</td>
+</tr>
+<tr>
+<td>PXEサーバー × 2</td>
+<td>Raspberry Pi 5/16GB (SC1113) × 2</td>
+<td>~2.5万円</td>
+<td>Amazon.co.jp</td>
+</tr>
+<tr>
+<td>WiFi AP</td>
+<td>Ubiquiti U7 Pro (WiFi 7)</td>
+<td>~2.5万円</td>
+<td>Amazon.co.jp</td>
+</tr>
+<tr>
+<td>ゲーミングスイッチ</td>
+<td>Planex FX2G-05EM2 (5x2.5G)</td>
+<td>~1万円</td>
+<td>Amazon.co.jp</td>
+</tr>
+<tr>
+<td>10G NIC x1</td>
+<td>NVIDIA ConnectX-6 Lx MCX631102AN-ADAT (CP用)</td>
+<td>~7万円</td>
+<td>Amazon.co.jp</td>
+</tr>
+<tr>
+<td>10G NIC x3</td>
+<td>10Gtek 82599ES X520互換 (ワーカー+予備)</td>
+<td>~3万円</td>
+<td>Amazon.co.jp</td>
+</tr>
+<tr>
+<td>10G NIC x1</td>
+<td>Intel X520-DA2 (Win11用)</td>
+<td>~0.5万円</td>
+<td>Amazon.co.jp</td>
+</tr>
+<tr>
+<td>SFP+ DAC</td>
+<td>10G パッシブDAC 1m × 8本</td>
+<td>¥13,952 (¥1,744×8)</td>
+<td><strong>FS.com Japan</strong>（日本倉庫在庫、¥10,000以上送料無料）</td>
+</tr>
+<tr>
+<td>Lab CP</td>
+<td>ThinkCentre M75q Tiny Gen 5 (新品)</td>
+<td>~13万円</td>
+<td>Lenovo 公式</td>
+</tr>
+<tr>
+<td>DMZ CP</td>
+<td>ThinkCentre M90q Tiny Gen 5 (新品)</td>
+<td>~16万円</td>
+<td>Lenovo 公式</td>
+</tr>
+<tr>
+<td><strong>合計（Getic ルート）</strong></td>
+<td></td>
+<td><strong>~116万円</strong></td>
+<td>MikroTikはGetic、DACはFS.com Japan</td>
+</tr>
+<tr>
+<td>~~合計（Amazon.co.jpルート）~~</td>
+<td></td>
+<td>~~¥122万円~~</td>
+<td>~~参考値~~</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2026-03-08">購入ルート調査結果（2026-03-08）<a class="headerlink" href="#2026-03-08" title="Permanent link">&para;</a></h3>
+<h4 id="mikrotik">MikroTik スイッチ: 購入先比較<a class="headerlink" href="#mikrotik" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>店舗</th>
+<th>特徴</th>
+<th>CRS305</th>
+<th>CRS328</th>
+<th>CRS309</th>
+<th>日本向け送料実測</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Amazon.co.jp</strong></td>
+<td>即納・国内・返品容易</td>
+<td>¥28,469</td>
+<td>¥96,592</td>
+<td>¥46,720</td>
+<td>なし</td>
+</tr>
+<tr>
+<td><strong>Getic</strong> (ラトビア)</td>
+<td>✅ <strong>最安・MikroTik正規代理店・全在庫あり</strong></td>
+<td>$119.15</td>
+<td>$434.22</td>
+<td>$217.68</td>
+<td>$37〜$63/注文（Standard/5営業日）</td>
+</tr>
+<tr>
+<td><strong>Baltic Networks</strong> (US)</td>
+<td>在庫不安定</td>
+<td>$149 (⚠️低在庫)</td>
+<td>$489 (⚠️BO)</td>
+<td>$269 (✅残3)</td>
+<td>$132/5台（実測）</td>
+</tr>
+<tr>
+<td><strong>Streakwave</strong> (US)</td>
+<td>やや高め</td>
+<td>未確認</td>
+<td>$553 (✅在庫)</td>
+<td>未確認</td>
+<td>~$40</td>
+</tr>
+</tbody>
+</table>
+<p><strong>為替レート目安</strong>: $1 = ¥150（2026-03-08時点）</p>
+<p><strong>関税</strong>: スイッチ類 <strong>0%</strong>（WTO ITA協定、HS 8517.62）。輸入消費税10%（CIF×10%）。</p>
+<h4 id="getic">Getic 購入コスト詳細<a class="headerlink" href="#getic" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>機器</th>
+<th>単価</th>
+<th>送料（日本向けStandard）</th>
+<th>小計（消費税前）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRS305 × 5</td>
+<td>$119.15 × 5 = $595.75</td>
+<td>$37.33 (5台まとめ)</td>
+<td>$633.08</td>
+</tr>
+<tr>
+<td>CRS309 × 1</td>
+<td>$217.68</td>
+<td>$34.10</td>
+<td>$251.78</td>
+</tr>
+<tr>
+<td>CRS328 × 1</td>
+<td>$434.22</td>
+<td>$62.81</td>
+<td>$497.03</td>
+</tr>
+<tr>
+<td><strong>全まとめ注文（推定）</strong></td>
+<td>$1,247.65</td>
+<td>~$90（合算推定）</td>
+<td>~$1,338</td>
+</tr>
+</tbody>
+</table>
+<p>まとめ注文時: $1,338 × ¥150 = ¥200,700 + 消費税10% ¥20,070 = <strong>¥220,770</strong>（MikroTik全スイッチ）</p>
+<p><strong>Amazon.co.jpルートとの比較</strong>: ¥285,657 → Getic ¥220,770 = <strong>¥64,887節約</strong></p>
+<p><strong>注意事項（Getic）:</strong>
+- CRS305のUSプラグは在庫切れ（Preorder）→ EUプラグ + 変換アダプター（Type C→A、¥500/台）で対応
+- CRS309のUSプラグは残3台（EUプラグは75台以上の大量在庫）; CRS328は全プラグ在庫あり
+- 電源は全モデル100-240V対応のため電圧問題なし
+- 送料は注文内容・重量で変動。チェックアウト時に実額確認推奨</p>
+<h4 id="2026-03-08_1">推奨購入戦略（2026-03-08更新）<a class="headerlink" href="#2026-03-08_1" title="Permanent link">&para;</a></h4>
+<p><strong>✅ Geticまとめ買い（最安・推奨）:</strong>
+- MikroTik全スイッチ（CRS305×5 + CRS309×1 + CRS328×1）→ <strong>Getic</strong>（全在庫あり、1注文でまとめて送料効率化）
+- SFP+ DAC ×8 → <strong>FS.com Japan</strong>（日本倉庫、送料無料）
+- MikroTik概算合計: <strong>~¥221,000</strong>（送料+消費税込み）
+- <strong>Amazonより¥65,000節約</strong></p>
+<p><strong>Geticの信頼性根拠:</strong>
+- MikroTik Value Added Distributor（公式正規代理店バッジ確認）
+- 保証12ヶ月
+- レビュー評価 4.9/5.0（CRS309）、5.0/5.0（CRS305/CRS328）
+- 「USD without VAT, Japan」— 日本向け価格を自動表示
+- Standard配送: 5〜6営業日（欧州→日本）</p>
+<h4 id="dac-fscom-japan">DAC ケーブル: FS.com Japan が最安<a class="headerlink" href="#dac-fscom-japan" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>FS.com Japan</strong>: ¥1,744/本（日本倉庫在庫49点、¥10,000以上送料無料）→ 8本で <strong>¥13,952</strong></li>
+<li>Amazon.co.jp: ~¥2,500〜3,000/本（FS.comの約1.5倍）</li>
+<li>旧見積もり(~2.5万円)より ¥11,000 節約</li>
+</ul>
+<h3 id="_8">価格についての補足<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>Phase 1の見積もり（~21.5万円）からの主な増額要因（Geticルートで¥6.5万削減済み）:</p>
+<ul>
+<li>コントロールプレーン新品化: +29万円（旧プランでは「旧PC流用」で0円想定）</li>
+<li>NICハイブリッド構成: +10.5万円（CX-6 Lx 1枚 + 82599ES 3枚 + X520-DA2 1枚）</li>
+<li>CRS305実売価格が想定より高い（~1.5万→2.8万/台）: +5万円（5台分）</li>
+<li>FWの10G SFP+対応アップグレード: +3万円</li>
+<li>WiFi 7 AP: +1万円</li>
+</ul>
+<p>ADR-008承認（2026-03-07）による追加:</p>
+<ul>
+<li>VP6670 CARP MASTER追加: +23.5万円</li>
+<li>VP2440フル構成（差額）: +5万円（当初~7万円→~12万円）</li>
+<li>WAN SW + per-FW SW × 2 (CRS305 × 3): +7.5万円（実売ベース）</li>
+<li>SFP+ DAC: FS.com Japanで¥1.4万（当初見積もり¥2.5万より削減）</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

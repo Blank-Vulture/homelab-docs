@@ -1,0 +1,1785 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+        <link rel="prev" href="../006-oob-management-infrastructure-2026-02/">
+      
+      
+        <link rel="next" href="../008-fw-ha-carp-vp6670-migration-2026-03/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ADR-007 OOBエアギャップ運用 - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-007-oob-wifi" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../.." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-007 OOBエアギャップ運用
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../current/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  現在の環境
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../hardware/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../current/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    現在の環境
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    現在の環境
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../current/proxmox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proxmox 構成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../current/cloudflare/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloudflare 構成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../current/integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    連携フロー
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../local-llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../003-backup-architecture-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 バックアップアーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../004-remote-access-separation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 外部アクセス責務分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../005-dmz-network-isolation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 DMZネットワーク物理分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../006-oob-management-infrastructure-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 OOB管理基盤
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 OOBエアギャップ運用
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 OOBエアギャップ運用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-oob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. OOB管理端末を完全エアギャップ（物理アクセス専用）エンドポイントとして運用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wifi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 更新手順: WiFiインターフェースによる物理分離更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ubiquiti-u7-pro-vlan-92-ssid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ubiquiti U7 Pro: VLAN 92 専用SSID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-opnsense" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. OPNsenseファイアウォールルールの変更
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        得られるもの
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレードオフ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../008-fw-ha-carp-vp6670-migration-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../009-tailscale-unified-access-cloudflare-dns-only-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009 外部アクセス統合（Tailscale一本化）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステータス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コンテキスト
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        決定
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="決定">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-oob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. OOB管理端末を完全エアギャップ（物理アクセス専用）エンドポイントとして運用する
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wifi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 更新手順: WiFiインターフェースによる物理分離更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ubiquiti-u7-pro-vlan-92-ssid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ubiquiti U7 Pro: VLAN 92 専用SSID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-opnsense" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. OPNsenseファイアウォールルールの変更
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        結果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="結果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        得られるもの
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレードオフ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関連ADR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="adr-007-oob-wifi">ADR-007: OOB管理端末 完全エアギャップ運用とWiFi分離更新手順<a class="headerlink" href="#adr-007-oob-wifi" title="Permanent link">&para;</a></h1>
+<h2 id="_1">ステータス<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>承認（2026-03-02）</p>
+<h2 id="_2">コンテキスト<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>ADR-006でOOB管理基盤（JetKVM / PXEサーバー / Yamahaスイッチ）を決定した。
+しかし、OOB管理端末へのアクセス方式が「VLAN 90 からのSSHのみ許可」と定義されており、
+以下の構造的問題を抱えていることが判明した。</p>
+<p><strong>問題1: OOB管理端末が「中間ホスト」になっている</strong></p>
+<div class="highlight"><pre><span></span><code>VLAN 90 管理端末 → SSH → OOB管理端末（VLAN 91）→ JetKVM / PXE
+</code></pre></div>
+<p>OOB管理端末がエンドポイントではなくジャンプホストとして機能しており、
+VLAN 90が侵害された場合、SSH経由でOOB管理端末に到達できてしまう。
+OOB管理端末はフルLinux OSを持つため、そのOS全体が攻撃面になる。</p>
+<p><strong>問題2: Yamahaスイッチの「ネットワーク到達経路ゼロ」優位性が活かされていない</strong></p>
+<p>ADR-006でYamaha SWX2310-10Gを採用した主な理由のひとつは、
+「MikroTik侵害後にOOBスイッチへ横展開できない構造」にある。
+しかしVLAN 90 → VLAN 91 のSSH経路が存在する限り、
+MikroTikがVLAN 90のトラフィックに介入できる場合はOOB管理端末に到達可能となる。</p>
+<p><strong>問題3: 直接アクセス案の検討と棄却</strong></p>
+<p>「OOB管理端末を廃止し、VLAN 90からJetKVMに直接アクセス（FWルールで制御）する」案も検討した。
+しかしこの案では、VLAN 91 への新たなルーティングを開けることになり、
+Yamahaスイッチが持つ「到達経路ゼロ」の優位性を構造的に失う。</p>
+<p><strong>問題4: 更新時のインターネット接続の扱い</strong></p>
+<p>完全エアギャップ運用では、JetKVMファームウェアおよびOOB管理端末OSの定期更新に
+インターネット接続が必要になる。
+OPNsenseのFWルールを一時的に緩める案も検討したが、VLAN 91/101の隔離が
+ネットワークレベルで一時的に変化する点が設計原則に反する。</p>
+<p>代替として、OOB端末に搭載したWiFiインターフェースを用いた<strong>物理的に分離した更新経路</strong>を採用する。
+更新中もVLAN 91/101のFWルールは一切変更せず、有線OOBネットワークの隔離は常時維持される。</p>
+<p><strong>問題5: 更新WiFiをVLAN 90に乗せることによる管理端末との同一L2問題</strong></p>
+<p>当初の設計ではwlan0をVLAN 90（Mgmt）に接続する案を採用していた。
+しかし VLAN 90 は通常の管理端末（有線）も使用する同一L2セグメントであり、
+更新ウィンドウ中にOOB端末と管理端末が同じブロードキャストドメインに共存する。</p>
+<p>IPフォワーディング無効化は「wlan0（VLAN 90）→ eth0（VLAN 91）への横断」を防ぐが、
+「VLAN 90上の他デバイスがOOB端末のwlan0インターフェースに直接到達できる」ことは防がない。
+更新ウィンドウ中に管理端末（VLAN 90）が侵害された場合、OOB端末に到達可能となる。</p>
+<p>専用VLAN（VLAN 92: OOB-Update）を新設し、インターネット方向のみ許可・VLAN 90内部通信を全拒否することで
+この問題を構造的に解消する。</p>
+<h2 id="_3">決定<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="1-oob">1. OOB管理端末を完全エアギャップ（物理アクセス専用）エンドポイントとして運用する<a class="headerlink" href="#1-oob" title="Permanent link">&para;</a></h3>
+<p>VLAN 90 から VLAN 91 / VLAN 101 へのネットワーク経路を<strong>ゼロ</strong>にする。</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>変更前（ADR-006）</th>
+<th>変更後（本ADR）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VLAN 90 → VLAN 91 経路</td>
+<td>SSH のみ許可</td>
+<td><strong>全拒否（常時）</strong></td>
+</tr>
+<tr>
+<td>OOB管理端末の役割</td>
+<td>中間ホスト（ジャンプホスト）</td>
+<td><strong>エンドポイント</strong></td>
+</tr>
+<tr>
+<td>アクセス方式</td>
+<td>VLAN 90 からSSH</td>
+<td><strong>物理アクセス専用</strong></td>
+</tr>
+<tr>
+<td>VLAN 91/101 FWルール</td>
+<td>変動あり</td>
+<td><strong>静的・変更なし</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-wifi">2. 更新手順: WiFiインターフェースによる物理分離更新<a class="headerlink" href="#2-wifi" title="Permanent link">&para;</a></h3>
+<p>OOB管理端末はWiFiアダプタを搭載する。通常は無効化し、更新時のみ有効化する。</p>
+<p><strong>通常状態（エアギャップ）:</strong></p>
+<div class="highlight"><pre><span></span><code>OOB管理端末
+  eth0: VLAN 91/101（有線、Yamaha OOBスイッチ接続）  ← 常時有効
+  wlan0: 無効                                         ← 常時無効
+</code></pre></div>
+<p><strong>更新ウィンドウ:</strong></p>
+<div class="highlight"><pre><span></span><code>OOB管理端末
+  eth0: VLAN 91/101（有線）   ← 変化なし
+  wlan0: VLAN 92（OOB-Update）← 更新中のみ有効化
+</code></pre></div>
+<p>Ubiquiti U7 ProにVLAN 92（OOB-Update）専用SSIDを設ける。
+VLAN 92はインターネット方向のみ許可し、VLAN 90（管理端末）を含む内部VLANへの通信は全拒否する。
+これにより更新中もOOB端末は管理端末のL2セグメントから完全に分離される。</p>
+<p><strong>更新ウィンドウの手順:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. WiFiを有効化してVLAN 92 SSIDに接続</span>
+nmcli<span class="w"> </span>radio<span class="w"> </span>wifi<span class="w"> </span>on
+nmcli<span class="w"> </span>connection<span class="w"> </span>up<span class="w"> </span>oob-update<span class="w">   </span><span class="c1"># 事前に登録したVLAN 92接続プロファイル</span>
+
+<span class="c1"># 2. 更新を実施</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y<span class="w">   </span><span class="c1"># OOB管理端末OS</span>
+<span class="c1"># JetKVM: wlan0経由でJetKVM Web UIにアクセスせず、eth0のVLAN 91経由のまま更新</span>
+
+<span class="c1"># 3. 完了後、即座にWiFiを無効化</span>
+nmcli<span class="w"> </span>radio<span class="w"> </span>wifi<span class="w"> </span>off
+</code></pre></div>
+<p><strong>IPフォワーディングの無効化（必須設定）:</strong></p>
+<p>eth0（VLAN 91）とwlan0（VLAN 90）間でOOB端末がルーターとして機能しないよう、
+OSレベルでIPフォワーディングを無効化する。</p>
+<div class="highlight"><pre><span></span><code>/etc/sysctl.d/99-oob-no-forward.conf
+---
+net.ipv4.ip_forward = 0
+net.ipv6.conf.all.forwarding = 0
+</code></pre></div>
+<h3 id="3-ubiquiti-u7-pro-vlan-92-ssid">3. Ubiquiti U7 Pro: VLAN 92 専用SSID<a class="headerlink" href="#3-ubiquiti-u7-pro-vlan-92-ssid" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSID</td>
+<td>非公開（hidden SSID）</td>
+</tr>
+<tr>
+<td>認証</td>
+<td>WPA3-Personal</td>
+</tr>
+<tr>
+<td>VLAN</td>
+<td>92（OOB-Update）</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>OOB管理端末の更新ウィンドウ専用</td>
+</tr>
+<tr>
+<td>クライアント分離</td>
+<td>有効</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-opnsense">4. OPNsenseファイアウォールルールの変更<a class="headerlink" href="#4-opnsense" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ルール</th>
+<th>変更内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VLAN 90 → VLAN 91 (SSH)</td>
+<td><strong>削除</strong></td>
+</tr>
+<tr>
+<td>VLAN 90 → VLAN 101 (SSH)</td>
+<td><strong>削除</strong></td>
+</tr>
+<tr>
+<td>VLAN 91 → 全VLAN / インターネット</td>
+<td>引き続き全拒否（<strong>変更なし</strong>）</td>
+</tr>
+<tr>
+<td>VLAN 101 → 全VLAN / インターネット</td>
+<td>引き続き全拒否（<strong>変更なし</strong>）</td>
+</tr>
+<tr>
+<td>VLAN 92 → インターネット (HTTP/HTTPS)</td>
+<td><strong>新規追加</strong></td>
+</tr>
+<tr>
+<td>VLAN 92 → VLAN 90 / 他全内部VLAN</td>
+<td><strong>新規追加（全拒否）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>FWルールの静的維持がこの設計の最大の特徴である。
+VLAN 92は「インターネット出口のみ持つ更新専用VLAN」として、VLAN 91/101と独立したルールセットで管理する。</p>
+<h2 id="_4">結果<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">得られるもの<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>常時エアギャップの実現</strong>: VLAN 91/101 への有線ネットワーク経路がゼロになる。
+  MikroTik侵害・VLAN 90 侵害のいずれが発生しても、OOB基盤に到達不可。</li>
+<li><strong>FWルールの静的維持</strong>: VLAN 91/101 のFWルールは更新時も含めて一切変更しない。
+  OPNsenseのルール変更ミスによる設定ミスリスクがゼロ。</li>
+<li><strong>Yamahaスイッチ優位性の完全活用</strong>: 有線OOBネットワークはインターネットと
+  物理的に接続されることがなく、「到達経路ゼロ」が構造として成立し続ける。</li>
+<li><strong>更新の実用性確保</strong>: WiFiで直接インターネットに接続するため、
+  apt upgradeなど通常の更新手順をそのまま使える。</li>
+<li><strong>攻撃面の最小化</strong>: OOB管理端末のSSHデーモンが不要になり、
+  有線側の常時リッスンポートがゼロ。</li>
+</ul>
+<h3 id="_6">トレードオフ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>OOB管理端末はWiFiアダプタ（内蔵またはUSB）が必要</li>
+<li>更新中、OOB端末はeth0（VLAN 91/101）とwlan0（VLAN 92）を同時に持つ
+  → IPフォワーディング無効化とiptablesでVLAN間ルーティングを構造的に阻止する</li>
+<li>VLAN 92（OOB-Update）の新設: OPNsense / MikroTik / Ubiquiti それぞれに設定が必要</li>
+<li>VLAN 92 SSID の認証情報をOOB端末に登録する必要がある</li>
+</ul>
+<h3 id="adr">関連ADR<a class="headerlink" href="#adr" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../006-oob-management-infrastructure-2026-02/">ADR-006</a>: OOB管理基盤構成（本ADRで一部変更）</li>
+<li><a href="../004-remote-access-separation-2026-02/">ADR-004</a>: 外部アクセス責務分離（Tailscale / CF ZT）</li>
+<li><a href="../005-dmz-network-isolation-2026-02/">ADR-005</a>: DMZ物理分離（同様の物理分離設計原則）</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

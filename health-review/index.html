@@ -1,0 +1,1814 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ホームラボ IaC ドキュメント">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>インフラ健全性レビュー - Homelab Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href=".." title="Homelab Docs" class="md-header__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homelab Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              インフラ健全性レビュー
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ライトモードに切替"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="ライトモードに切替" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="ダークモードに切替"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="ダークモードに切替" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../current/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  現在の環境
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ネットワーク
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../hardware/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インフラ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../decisions/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  運用
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Homelab Docs" class="md-nav__button md-logo" aria-label="Homelab Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 19h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-7zM4 3h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 4h1V5H9zm0 8h1v-2H9zM5 5v2h2V5zm0 8v2h2v-2z"/></svg>
+
+    </a>
+    Homelab Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../current/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    現在の環境
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    現在の環境
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../current/proxmox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proxmox 構成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../current/cloudflare/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloudflare 構成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../current/integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    連携フロー
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ネットワーク
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ネットワーク
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vlans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VLAN設計
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インフラ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インフラ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ハードウェア
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../decisions/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    運用
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    運用
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/001-hardware-revision-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 ハードウェア選定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/002-gpu-pc-local-llm-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 GPU専用PC・ローカルLLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/003-backup-architecture-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 バックアップアーキテクチャ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/004-remote-access-separation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 外部アクセス責務分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/005-dmz-network-isolation-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 DMZネットワーク物理分離
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/006-oob-management-infrastructure-2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 OOB管理基盤
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/007-oob-airgap-operation-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 OOBエアギャップ運用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/008-fw-ha-carp-vp6670-migration-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 FW冗長化（CARP）とVP6670マイグレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/009-tailscale-unified-access-cloudflare-dns-only-2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009 外部アクセス統合（Tailscale一本化）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サマリー
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 CRITICAL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 CRITICAL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c-1-update-forgejoyml-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-1 update-forgejo.yml — Python 正規表現の $ アンカー問題
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟠 HIGH
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟠 HIGH">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h-1-update-packagesyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-1 update-packages.yml — ホスト更新失敗の隠蔽
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-2-update-pveyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-2 update-pve.yml — ノード名ハードコード + リブートタイムアウト不足
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-3-cloudflare-rotatesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-3 cloudflare-rotate.sh — 旧トークン削除前の新トークン検証なし
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-4-tofush-hcl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-4 tofu.sh — HCL へのパスフレーズ直接展開
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-5-git-pushsh-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-5 git-push.sh — トークンの URL 展開で特殊文字破損
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 MEDIUM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 MEDIUM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#m-1-update-pi-runneryml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-1 update-pi-runner.yml — バイナリ置換後の動作確認なし
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-2-dependency-reviewyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-2 dependency-review.yml — バージョン比較が文字列一致
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-3-weekly-updateyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-3 weekly-update.yml — ハングした前回実行が次回を永久ブロック
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-4-ansiblesh-provision-lxcsh-ssh-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-4 ansible.sh / provision-lxc.sh — エラー時の ssh-agent 残存
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-5-update-pi-runneryml-act_runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-5 update-pi-runner.yml — act_runner の再起動をランナー自身が実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔵 LOW
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔵 LOW">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#l-1-backup-network-configssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-1 backup-network-configs.sh — 上書き前のバックアップなし
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-2-bootstrapsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-2 bootstrap.sh — 冪等性なし
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-3-update-packagesyml-alpine-reboot-required-debian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-3 update-packages.yml — Alpine での reboot-required が Debian 前提
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-4-cloudflaresh-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-4 cloudflare.sh — ゾーン ID をリクエストごとに再取得
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔒 設計上意図的 (対処不要)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔒 設計上意図的 (対処不要)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#i-1-load-secretssh-ttl-8-yubikey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I-1 load-secrets.sh — セッション TTL 8 時間、YubiKey なしで有効
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        対処ログ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">インフラ健全性レビュー<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>実施日: 2026-03-26
+スコープ: <code>.forgejo/workflows/</code> 全ワークフロー + <code>scripts/</code> 全スクリプト
+凡例: 🔴 CRITICAL / 🟠 HIGH / 🟡 MEDIUM / 🔵 LOW / ✅ 対処済み / 🔒 設計上意図的</p>
+</blockquote>
+<hr />
+<h2 id="_2">サマリー<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>深刻度</th>
+<th>件数</th>
+<th>対処済み</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 CRITICAL</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>🟠 HIGH</td>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>🟡 MEDIUM</td>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>🔵 LOW</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>🔒 設計上意図的</td>
+<td>1</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="critical">🔴 CRITICAL<a class="headerlink" href="#critical" title="Permanent link">&para;</a></h2>
+<h3 id="c-1-update-forgejoyml-python">C-1 <code>update-forgejo.yml</code> — Python 正規表現の <code>$</code> アンカー問題<a class="headerlink" href="#c-1-update-forgejoyml-python" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/update-forgejo.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: シェルの <code>python3 -c "..."</code> 内で <code>r'^v(\d+)\.\d+\.\d+$'</code> の <code>$</code> が shell 変数展開と干渉し、
+  Codeberg バージョン比較が常に失敗またはスキップされる可能性がある。
+  結果として major version 変更の警告が毎回出るか、バージョン判定が完全に無視される。</li>
+<li><strong>修正方針</strong>: <code>$</code> の前にバックスラッシュを追加するか、Python を別ステップに分離する。
+  または <code>re.fullmatch()</code> を使用して <code>$</code> アンカーを不要にする。</li>
+</ul>
+<hr />
+<h2 id="high">🟠 HIGH<a class="headerlink" href="#high" title="Permanent link">&para;</a></h2>
+<h3 id="h-1-update-packagesyml">H-1 <code>update-packages.yml</code> — ホスト更新失敗の隠蔽<a class="headerlink" href="#h-1-update-packagesyml" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/update-packages.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: 各 LXC ホストのパッケージ更新が失敗してもスクリプトは続行し、
+  ジョブは <code>success</code> を返す。週次で失敗が検知されずサイレントドリフトが発生する。</li>
+<li><strong>修正方針</strong>: 各ホストの終了コードを <code>FAILED_HOSTS</code> 変数に蓄積し、
+  ジョブ末尾で <code>exit 1</code> を返すようにする。</li>
+</ul>
+<h3 id="h-2-update-pveyml">H-2 <code>update-pve.yml</code> — ノード名ハードコード + リブートタイムアウト不足<a class="headerlink" href="#h-2-update-pveyml" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/update-pve.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題 (a)</strong>: リブート後の k3s Ready 確認で <code>grep -q Ready</code> がノード名 <code>k3s-node</code> をハードコード。
+  ノード名変更時にサイレント失敗。</li>
+<li><strong>問題 (b)</strong>: 待機ループが 24×20s=480s。カーネル更新後のリブートが長引くと偽失敗。</li>
+<li><strong>修正方針</strong>:</li>
+<li>(a) <code>k3s kubectl get nodes --no-headers | grep -q Ready</code> で任意ノード名に対応</li>
+<li>(b) ループを 30 回 (600s) に拡張</li>
+</ul>
+<h3 id="h-3-cloudflare-rotatesh">H-3 <code>cloudflare-rotate.sh</code> — 旧トークン削除前の新トークン検証なし<a class="headerlink" href="#h-3-cloudflare-rotatesh" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/cloudflare-rotate.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: 新トークン作成 → (検証なし) → 旧トークン削除 の順。
+  新トークンに権限がない場合、旧トークンを削除済みのためロールバック不可能。
+  Cloudflare 管理が完全に失われるリスク。</li>
+<li><strong>修正方針</strong>: 旧トークン削除前に新トークンで <code>/user</code> API を呼び出して動作を確認する。
+  失敗時は新トークンを削除してエラー終了する。</li>
+</ul>
+<h3 id="h-4-tofush-hcl">H-4 <code>tofu.sh</code> — HCL へのパスフレーズ直接展開<a class="headerlink" href="#h-4-tofush-hcl" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/tofu.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: <code>passphrase = "$TOFU_STATE_PASSPHRASE"</code> で HCL に直接変数展開。
+  パスフレーズに <code>"</code> や <code>$</code> が含まれると HCL が壊れ、state が暗号化されないまま実行される恐れ。</li>
+<li><strong>修正方針</strong>: HCL の <code>passphrase</code> を環境変数参照 (<code>env("TOFU_STATE_PASSPHRASE")</code>) に変更するか、
+  <code>printf %s</code> で適切にエスケープする。OpenTofu の env 参照構文を使うのが最もクリーン。</li>
+</ul>
+<h3 id="h-5-git-pushsh-url">H-5 <code>git-push.sh</code> — トークンの URL 展開で特殊文字破損<a class="headerlink" href="#h-5-git-pushsh-url" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/git-push.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: <code>https://user:${TOKEN}@host/...</code> でトークンを URL に直接埋め込み。
+  トークンに <code>@</code> や <code>#</code> が含まれると URL がパースエラーになる。</li>
+<li><strong>修正方針</strong>: <code>git credential-store</code> またはヘッダー認証 (<code>-H "Authorization: token ..."</code>) を使用する。
+  あるいは <code>python3 -c "import urllib.parse; print(urllib.parse.quote(token))"</code> で URL エンコードする。</li>
+</ul>
+<hr />
+<h2 id="medium">🟡 MEDIUM<a class="headerlink" href="#medium" title="Permanent link">&para;</a></h2>
+<h3 id="m-1-update-pi-runneryml">M-1 <code>update-pi-runner.yml</code> — バイナリ置換後の動作確認なし<a class="headerlink" href="#m-1-update-pi-runneryml" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/update-pi-runner.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: act_runner バイナリをダウンロード後、チェックサム検証なしに即置換。
+  破損したバイナリでもエラーなく上書きされる。</li>
+<li><strong>修正方針</strong>: ダウンロード後に <code>sha256sum</code> で検証し、失敗時は既存バイナリを保持して終了。</li>
+</ul>
+<h3 id="m-2-dependency-reviewyml">M-2 <code>dependency-review.yml</code> — バージョン比較が文字列一致<a class="headerlink" href="#m-2-dependency-reviewyml" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/dependency-review.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: <code>v1.9.0</code> と <code>v1.10.0</code> を文字列比較すると <code>v1.9.0 &gt; v1.10.0</code> になる。
+  マイナーバージョンが 2 桁以上になると更新を見逃す。</li>
+<li><strong>修正方針</strong>: Python の <code>packaging.version.Version</code> (または手動 tuple 比較) で semver 比較する。</li>
+</ul>
+<h3 id="m-3-weekly-updateyml">M-3 <code>weekly-update.yml</code> — ハングした前回実行が次回を永久ブロック<a class="headerlink" href="#m-3-weekly-updateyml" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/weekly-update.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: <code>cancel-in-progress: false</code> のため、前回実行がフリーズすると
+  次の週次実行がキューでブロックされ続ける。</li>
+<li><strong>修正方針</strong>: <code>cancel-in-progress: true</code> に変更し、各サブワークフローに適切なタイムアウトを設定する。</li>
+</ul>
+<h3 id="m-4-ansiblesh-provision-lxcsh-ssh-agent">M-4 <code>ansible.sh</code> / <code>provision-lxc.sh</code> — エラー時の ssh-agent 残存<a class="headerlink" href="#m-4-ansiblesh-provision-lxcsh-ssh-agent" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/ansible.sh</code>, <code>scripts/provision-lxc.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: <code>eval "$(ssh-agent -s)"</code> でエージェントを起動するが、<code>trap</code> がないため
+  エラー終了時にバックグラウンドプロセスが残存する。</li>
+<li><strong>修正方針</strong>: <code>trap "kill \$SSH_AGENT_PID 2&gt;/dev/null" EXIT INT TERM</code> を追加する。</li>
+</ul>
+<h3 id="m-5-update-pi-runneryml-act_runner">M-5 <code>update-pi-runner.yml</code> — act_runner の再起動をランナー自身が実行<a class="headerlink" href="#m-5-update-pi-runneryml-act_runner" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/update-pi-runner.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: ランナー自身が <code>systemctl restart act_runner</code> を実行すると、
+  実行中のワークフローが強制終了される。</li>
+<li><strong>修正方針</strong>: <code>systemd</code> の <code>ExecStop</code> + <code>RemainAfterExit</code> を使うか、
+  ジョブ完了後にグレースフルリスタートするように変更 (<code>sleep 5 &amp;&amp; sudo systemctl restart act_runner &amp;</code> で
+  ジョブが先にクリーンアップされてから再起動)。</li>
+</ul>
+<hr />
+<h2 id="low">🔵 LOW<a class="headerlink" href="#low" title="Permanent link">&para;</a></h2>
+<h3 id="l-1-backup-network-configssh">L-1 <code>backup-network-configs.sh</code> — 上書き前のバックアップなし<a class="headerlink" href="#l-1-backup-network-configssh" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/backup-network-configs.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: 前回の <code>.rsc</code> ファイルをバックアップなしに上書き。部分的な export があると消える。</li>
+<li><strong>修正方針</strong>: 保存前に <code>.bak</code> にリネームし、成功時のみ正規ファイルに移動する。</li>
+</ul>
+<h3 id="l-2-bootstrapsh">L-2 <code>bootstrap.sh</code> — 冪等性なし<a class="headerlink" href="#l-2-bootstrapsh" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/bootstrap.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: 再実行すると重複インストールや既存 hook の上書きが発生する。</li>
+<li><strong>修正方針</strong>: <code>brew list &lt;pkg&gt; || brew install &lt;pkg&gt;</code> 形式に変更。pre-commit も既存確認を追加。</li>
+</ul>
+<h3 id="l-3-update-packagesyml-alpine-reboot-required-debian">L-3 <code>update-packages.yml</code> — Alpine での <code>reboot-required</code> が Debian 前提<a class="headerlink" href="#l-3-update-packagesyml-alpine-reboot-required-debian" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>.forgejo/workflows/update-packages.yml</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: <code>/var/run/reboot-required</code> は Debian 固有。Alpine では常に "no" を返す。</li>
+<li><strong>修正方針</strong>: Alpine では <code>apk upgrade</code> の出力でカーネルパッケージの更新を確認する。</li>
+</ul>
+<h3 id="l-4-cloudflaresh-id">L-4 <code>cloudflare.sh</code> — ゾーン ID をリクエストごとに再取得<a class="headerlink" href="#l-4-cloudflaresh-id" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/cloudflare.sh</code></li>
+<li><strong>状態</strong>: ✅ 対処済み (2026-03-26)</li>
+<li><strong>問題</strong>: 複数コマンドを連続実行すると毎回 API でゾーン ID を取得する。
+  Cloudflare レート制限に近づく恐れがある。</li>
+<li><strong>修正方針</strong>: ゾーン ID を環境変数または一時ファイルにキャッシュする。</li>
+</ul>
+<hr />
+<h2 id="_3">🔒 設計上意図的 (対処不要)<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="i-1-load-secretssh-ttl-8-yubikey">I-1 <code>load-secrets.sh</code> — セッション TTL 8 時間、YubiKey なしで有効<a class="headerlink" href="#i-1-load-secretssh-ttl-8-yubikey" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ファイル</strong>: <code>scripts/load-secrets.sh</code></li>
+<li><strong>状態</strong>: 🔒 設計上意図的</li>
+<li><strong>理由</strong>: CI/自動化ツール (Claude Code 等) がセッションファイルを使用するため意図的に長い TTL を設定。
+  ADR-010 (Vault + Teleport + Authentik) で将来的により secure な認可基盤に移行予定。</li>
+</ul>
+<hr />
+<h2 id="_4">対処ログ<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>日付</th>
+<th>ID</th>
+<th>対処内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-03-26</td>
+<td>C-1</td>
+<td><code>update-forgejo.yml</code>: Python 文字列をシングルクォートに変更し <code>$</code> アンカー問題を解消</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>H-1, L-3</td>
+<td><code>update-packages.yml</code>: <code>FAILED_HOSTS</code> 蓄積 + Alpine reboot 検出 + set -e 追加</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>H-2</td>
+<td><code>update-pve.yml</code>: <code>control-plane</code> ラベルで任意ノード名対応 + 待機を 600s に延長</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>H-3</td>
+<td><code>cloudflare-rotate.sh</code>: <code>/user/tokens/verify</code> で新トークン検証 → 失敗時クリーンアップ</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>H-4</td>
+<td><code>tofu.sh</code>: HCL に <code>env("TOFU_STATE_PASSPHRASE")</code> 関数を使用 + heredoc をシングルクォート化</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>H-5</td>
+<td><code>git-push.sh</code>: <code>credential.helper=store --file=TMPFILE</code> に変更してトークン特殊文字に対応</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>M-1, M-5</td>
+<td><code>update-pi-runner.yml</code>: sha256sum 検証追加 + <code>nohup sleep 10 &amp;&amp; restart</code> で遅延バックグラウンド再起動</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>M-2</td>
+<td><code>dependency-review.yml</code>: Python tuple 比較で semver 正確判定</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>M-3</td>
+<td><code>weekly-update.yml</code>: <code>cancel-in-progress: true</code> でハングジョブ自動キャンセル</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>M-4</td>
+<td><code>ansible.sh</code>: フォールバックパスの <code>exec</code> を除去し EXIT trap で ssh-agent を確実に終了</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>L-1</td>
+<td><code>backup-network-configs.sh</code>: tmpfile 経由のアトミック置換 + 既存ファイルを <code>.bak</code> に退避</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>L-2</td>
+<td><code>bootstrap.sh</code>: <code>brew_install()</code> で既インストール確認 + pre-commit フック重複防止</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>L-4</td>
+<td><code>cloudflare.sh</code>: Zone ID・Account ID を <code>/tmp</code> に 1 時間キャッシュして API 再取得を抑制</td>
+</tr>
+<tr>
+<td>2026-03-26</td>
+<td>拡張</td>
+<td>サービス別アップデートワークフロー追加: <code>update-traefik.yml</code>, <code>update-tailscale.yml</code>, <code>update-postgres.yml</code>, <code>update-docker-node.yml</code>。<code>weekly-update.yml</code> を薄いオーケストレーターとして維持し、各サービスがバージョン検知・再起動・ヘルスチェックを自己完結する設計に移行</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.tabs.link", "search.highlight", "search.suggest"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
